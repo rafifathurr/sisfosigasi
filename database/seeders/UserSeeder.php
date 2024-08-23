@@ -14,24 +14,13 @@ class UserSeeder extends Seeder
     {
 
         $admin_account = User::create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'employee_number' => '12345678',
-            'email' => 'admin@gmail.com',
-            'password'=> bcrypt('admin123')
+            'name' => 'Super Admin',
+            'username' => 'super_admin',
+            'phone' => '081122334455',
+            'email' => 'super-admin@sisfosigasi.com',
+            'password'=> bcrypt('superadmin')
         ]);
 
-        $admin_account->assignRole('admin');
-
-        $staff_account = User::create([
-            'name' => 'Staff',
-            'username' => 'staff',
-            'employee_number' => '87654321',
-            'email' => 'staff@gmail.com',
-            'password'=> bcrypt('staff123')
-        ]);
-
-        $staff_account->assignRole('staff');
-
+        $admin_account->assignRole('super-admin');
     }
 }
