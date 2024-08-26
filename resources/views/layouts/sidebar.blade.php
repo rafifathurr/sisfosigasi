@@ -52,8 +52,8 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
-            with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
+       with font-awesome or any other icon font library -->
+                {{-- <li class="nav-item menu-open">
                     <a href="#" class="nav-link active">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
@@ -669,7 +669,7 @@
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon far fa-circle text-danger"></i>
-                        <p class="text">Important</p>
+                        <p class="text">Important Test</p>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -683,6 +683,24 @@
                         <i class="nav-icon far fa-circle text-info"></i>
                         <p>Informational</p>
                     </a>
+                </li> --}}
+                <li class="nav-header">Pemerintah</li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Data Master
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('age-vulnerability-classification.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Age Vulnerability Classification </p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav> --}}
