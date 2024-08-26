@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Pemerintah\AgeVulnerabilityClassificationControler;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,7 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
         return view('home');
     })->name('home');
 
-    Route::group(['controller' => AgeVulnerabilityClassificationControler::class, 'prefix' => 'age-vulnerability-classification', 'as' => 'age-vulnerability-classification.'], function () {
+    Route::group(['controller' => \App\Http\Controllers\AgeVulnerabilityClassification\AgeVulnerabilityClassificationControler::class, 'prefix' => 'age-vulnerability-classification', 'as' => 'age-vulnerability-classification.'], function () {
         Route::get('/', 'index')->name('index');
         Route::post('/store', 'store')->name('store');
         Route::post('/update', 'update')->name('update');
