@@ -45,7 +45,7 @@ class UserManagementController extends Controller
                          * Validation User Logged In Equals with User Record id
                          */
                         if (Auth::user()->id != $data->id) {
-                            $btn_action .= '<button class="btn btn-lg btn-danger my-1 ml-1" onclick="destroy(' . $data->id . ')" title="Hapus"><i class="fas fa-trash"></i></button>';
+                            $btn_action .= '<button class="btn btn-sm btn-danger my-1 ml-1" onclick="destroy(' . $data->id . ')" title="Hapus"><i class="fas fa-trash"></i></button>';
                         }
                     }
 

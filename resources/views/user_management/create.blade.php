@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <form action="{{ route('user-management.store') }}" method="post">
+                    <form id="form_user" action="{{ route('user-management.store') }}" method="post">
                         @csrf
                         <div class="card">
                             <div class="card-header">
