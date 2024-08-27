@@ -125,4 +125,26 @@
             }
         });
     }
+
+    $("#form_user").submit(function(e) {
+        let validate_input_form = true;
+
+        e.preventDefault(); // Prevent the default form submission behavior
+        Swal.fire({
+            title: 'Buat User?',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Simpan!',
+            cancelButtonText: 'Batal',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swalProcess();
+                $("#form_user").unbind('submit').submit();
+            }
+        });
+    });
+
 </script>
