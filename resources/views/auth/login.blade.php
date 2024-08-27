@@ -1,17 +1,17 @@
 @include('layouts.head')
 <!-- Font Awesome CSS -->
-
 <style>
     .input-group-text {
         cursor: pointer;
     }
 </style>
-
 <div class="container">
     <div class="row justify-content-center"style="height: 100vh;">
         <div class="col-md-6 d-flex align-items-center justify-content-center">
-            <div class="card card-info w-100">
-                <div class="card-header">Login</div>
+            <div class="card w-100">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold"><i class="fas fa-sign-in-alt mr-2"></i>Login</h3>
+                </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('authenticate') }}">
                         @csrf
@@ -30,8 +30,8 @@
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <input id="password_hash" type="password"
-                                    class="form-control @error('password') is-invalid @enderror"
-                                    name="password" required value="{{ old('password') }}">
+                                    class="form-control @error('password') is-invalid @enderror" name="password"
+                                    required value="{{ old('password') }}">
                                 <span class="input-group-text" id="togglePassword" onclick="togglePasswordVisibility()">
                                     <i class="fas fa-eye" id="eye-icon"></i>
                                 </span>
@@ -39,13 +39,16 @@
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
-                                </div>
-                            @enderror
+                                @enderror
+                            </div>
                         </div>
-                        <div class="text-right mt-2">
-                            <button type="submit" class="btn-sm btn btn-info w-100">
-                                Masuk
+                        <div class="mt-4 mb-3">
+                            <button type="submit" class="btn btn-sm btn-primary w-100 font-weight-bold">
+                                Login
                             </button>
+                        </div>
+                        <div class="text-center">
+                            
                         </div>
                     </form>
                 </div>

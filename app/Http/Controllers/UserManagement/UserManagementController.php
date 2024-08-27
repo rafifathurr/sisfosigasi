@@ -241,7 +241,7 @@ class UserManagementController extends Controller
                 $user->syncRoles([$roleName]); // Menghapus role lama dan menambahkan role baru
 
                 DB::commit();
-                return redirect()->route('user-management.index')->with('success', 'User update successfully.');
+                return redirect()->route('user-management.index')->with('success', 'User Berhasil Disimpan');
             } else {
                 DB::rollBack();
                 return redirect()
