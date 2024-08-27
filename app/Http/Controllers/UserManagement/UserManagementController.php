@@ -18,10 +18,10 @@ class UserManagementController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (Auth::user()->hasAnyRole(['super-admin', 'pemerintah'])) {
+            if (User::find(Auth::user()->id)->hasRole(['super-admin', 'pemerintah'])) {
                 return $next($request);
             }
-            return redirect('/'); // Ganti dengan redirect sesuai kebutuhan
+            return redirect('/');
         });
     }
     public function index()
@@ -33,32 +33,30 @@ class UserManagementController extends Controller
     {
         $user = User::with('roles')->whereNull('deleted_at')->get();
         if ($request->ajax()) {
-
             $data_tables = DataTables::of($user)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
-                    $btn_action = '<a href="' . route('user-management.show', ['id' => $data->id]) . '" class="btn btn-sm btn-primary my-1" title="Detail"><i class="fas fa-eye"></i></a>&nbsp';
-                    
-                    if(auth()->user()->hasRole('super-admin')){
-                        $btn_action .= '<a href="' . route('user-management.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-warning my-1 ms-1" title="Ubah"><i class="fas fa-pencil-alt"></i></a>&nbsp';
+                    $btn_action = '<a href="' . route('user-management.show', ['id' => $data->id]) . '" class="btn btn-sm btn-primary my-1" title="Detail"><i class="fas fa-eye"></i></a>';
+
+                    if (User::find(Auth::user()->id)->hasRole('super-admin')) {
+                        $btn_action .= '<a href="' . route('user-management.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-warning my-1 ml-1" title="Ubah"><i class="fas fa-pencil-alt"></i></a>';
+
                         /**
                          * Validation User Logged In Equals with User Record id
                          */
                         if (Auth::user()->id != $data->id) {
-                            $btn_action .= '<button class="btn btn-sm btn-danger my-1 ms-1" onclick="destroy(' . $data->id . ')" title="Hapus"><i class="fas fa-trash"></i></button>';
+                            $btn_action .= '<button class="btn btn-lg btn-danger my-1 ml-1" onclick="destroy(' . $data->id . ')" title="Hapus"><i class="fas fa-trash"></i></button>';
                         }
                     }
 
                     return $btn_action;
                 })
                 ->addColumn('role', function ($data) {
-                    // Jika user memiliki lebih dari satu role, bisa digabungkan dengan koma atau format lain
                     $roles = $data->roles->pluck('name')->toArray();
-                    return implode(', ', $roles);
+                    return ucwords(implode(' ', explode('-', $roles[0])));
                 })
-                ->rawColumns(['action', 'formatDate', 'status'])
+                ->rawColumns(['action'])
                 ->make(true);
-
             return $data_tables;
         }
     }
@@ -71,17 +69,17 @@ class UserManagementController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|exists:roles,id',
-        ]);
         try {
-            DB::beginTransaction();
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|max:255',
+                'username' => 'required|string|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'role' => 'required|exists:roles,id',
+            ]);
 
+            DB::beginTransaction();
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -92,142 +90,168 @@ class UserManagementController extends Controller
             ]);
 
             $roleName = Role::find($request->role)->name;
-
             $model_has_role = $user->assignRole($roleName);
-            DB::commit();
-            return redirect()->route('user-management.index')->with('success', 'User created successfully.');
+
+            /**
+             * Validation Submit
+             */
+            if ($user && $model_has_role) {
+                DB::commit();
+                return redirect()->route('user-management.index')->with('success', 'User Berhasil Disimpan');
+            } else {
+                DB::rollBack();
+                return redirect()
+                    ->back()
+                    ->with(['failed' => 'User Gagal Disimpan']);
+            }
         } catch (Exception $e) {
-            dd($e);
+            return redirect()
+                ->back()
+                ->with(['failed' => $e->getMessage()]);
         }
     }
 
     public function destory(Request $request)
     {
         try {
+            DB::beginTransaction();
             $user = User::where('id', $request->id)->update([
-                'deleted_at' => Carbon::now()
+                'deleted_at' => Carbon::now(),
             ]);
+
+            /**
+             * Validation Submit
+             */
             if ($user) {
+                DB::commit();
                 return response()->json([
                     'success' => true,
                 ]);
             } else {
+                DB::rollBack();
                 return response()->json([
                     'success' => false,
                     'message' => 'user gagal di hapus',
                 ]);
             }
         } catch (Exception $e) {
-            dd($e);
-            // return redirect()
-            //     ->back()
-            //     ->with(['failed' => $e->getMessage()]);
+            return redirect()
+                ->back()
+                ->with(['failed' => $e->getMessage()]);
         }
     }
     public function show($id)
-    { {
-            try {
-                /**
-                 * Get User Record from id
-                 */
-                $user = User::with(['roles'])->find($id);
+    {
+        try {
+            /**
+             * Get User Record from id
+             */
+            $user = User::find($id);
+
+            /**
+             * Validation User id
+             */
+            if (!is_null($user)) {
+                $data['user'] = $user;
 
                 /**
-                 * Validation User id
+                 * User Role Configuration
                  */
-                if (!is_null($user)) {
-                    $data['user'] = $user;
+                $data['user_role'] = ucwords(implode(' ', explode('-', $user->getRoleNames()[0])));
 
-                    /**
-                     * User Role Configuration
-                     */
-                    $exploded_raw_role = explode('-', $user->getRoleNames()[0]);
-                    $data['user_role'] = ucwords(implode(' ', $exploded_raw_role));
-                    // dd($data);
-                    return view('user_management.detail', $data);
-                } else {
-                    return redirect()
-                        ->back()
-                        ->with(['failed' => 'Invalid Request!']);
-                }
-            } catch (Exception $e) {
+                return view('user_management.detail', $data);
+            } else {
                 return redirect()
                     ->back()
-                    ->with(['failed' => $e->getMessage()]);
+                    ->with(['failed' => 'Data Tidak Ditemukan']);
             }
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with(['failed' => $e->getMessage()]);
         }
     }
     public function edit($id)
-    { {
+    {
+        try {
+            /**
+             * Get User Record from id
+             */
+            $user = User::with(['roles'])->find($id);
+            $roles = Role::get();
 
-            try {
+            /**
+             * Validation User id
+             */
+            if (!is_null($user)) {
+                $data['user'] = $user;
+
                 /**
-                 * Get User Record from id
+                 * User Role Configuration
                  */
-                $user = User::with(['roles'])->find($id);
-                $roles = Role::get();
+                $data['user_role'] = $user->roles->first()->id;
+                $data['roles'] = $roles;
 
-                /**
-                 * Validation User id
-                 */
-                if (!is_null($user)) {
-                    $data['user'] = $user;
-
-                    /**
-                     * User Role Configuration
-                     */
-                    // $exploded_raw_role = explode('-', $user->getRoleNames()[0]);
-                    $data['user_role'] = $user->roles->first()->id;
-                    $data['roles'] = $roles;
-                    // dd($data);
-                    return view('user_management.edit', $data);
-                } else {
-                    return redirect()
-                        ->back()
-                        ->with(['failed' => 'Invalid Request!']);
-                }
-            } catch (Exception $e) {
+                return view('user_management.edit', $data);
+            } else {
                 return redirect()
                     ->back()
-                    ->with(['failed' => $e->getMessage()]);
+                    ->with(['failed' => 'Invalid Request!']);
             }
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with(['failed' => $e->getMessage()]);
         }
     }
 
     public function update(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|min:8',
-            'phone' => 'required|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $request->id,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $request->id,
-            'password' => 'nullable|min:8|confirmed',
-        ]);
-
-        // Cek jika password diisi, jika tidak unset dari $data
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        } else {
-            unset($data['password']);
-        }
-
         try {
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'address' => 'nullable|min:8',
+                'phone' => 'required|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . $request->id,
+                'email' => 'required|string|email|max:255|unique:users,email,' . $request->id,
+                'password' => 'nullable|min:8|confirmed',
+            ]);
+
+            // Cek jika password diisi, jika tidak unset dari $data
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            } else {
+                unset($data['password']);
+            }
+
             DB::beginTransaction();
 
             // Ambil user berdasarkan ID
             $user = User::findOrFail($request->id);
 
             // Update user dengan data yang sudah divalidasi
-            $user->update($data);
+            $user_update = $user->update($data);
 
-            // Perbarui role pengguna
-            $roleName = Role::find($request->role)->name;
-            $user->syncRoles([$roleName]); // Menghapus role lama dan menambahkan role baru
-            DB::commit();
-            return redirect()->route('user-management.index')->with('success', 'User update successfully.');
+            /**
+             * Validation Submit
+             */
+            if ($user_update) {
+                // Perbarui role pengguna
+                $roleName = Role::find($request->role)->name;
+                $user->syncRoles([$roleName]); // Menghapus role lama dan menambahkan role baru
+
+                DB::commit();
+                return redirect()->route('user-management.index')->with('success', 'User update successfully.');
+            } else {
+                DB::rollBack();
+                return redirect()
+                    ->back()
+                    ->with(['failed' => 'User Gagal Disimpan']);
+            }
         } catch (Exception $e) {
-            dd($e);
+            return redirect()
+                ->back()
+                ->with(['failed' => $e->getMessage()]);
         }
     }
 }

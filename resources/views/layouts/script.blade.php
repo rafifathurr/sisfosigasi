@@ -46,6 +46,6 @@
         }
     });
 </script>
-@include('java_script.swal')
+@include('js.swal')
 @stack('javascript-bottom')
-@include('sweetalert::alert')
+{{-- @include('sweetalert::alert') --}}
