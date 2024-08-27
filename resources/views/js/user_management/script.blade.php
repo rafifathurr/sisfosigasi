@@ -92,6 +92,12 @@
             title: "Are you sure?",
             text: "You won't be able to revert this!",
             icon: "warning",
+            customClass: {
+                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-sm btn-danger mb-3',
+            },
+            buttonsStyling: false,
+
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
@@ -136,6 +142,12 @@
             showCancelButton: true,
             confirmButtonText: 'Ya, Simpan!',
             cancelButtonText: 'Batal',
+            customClass: {
+                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-sm btn-danger mb-3',
+            },
+            buttonsStyling: false,
+
             allowOutsideClick: false,
             allowEscapeKey: false,
 
@@ -146,5 +158,4 @@
             }
         });
     });
-
 </script>
