@@ -92,6 +92,12 @@
             title: "Are you sure?",
             text: "You won't be able to revert this!",
             icon: "warning",
+            customClass: {
+                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-sm btn-danger mb-3',
+            },
+            buttonsStyling: false,
+
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
@@ -125,4 +131,31 @@
             }
         });
     }
+
+    $("#form_user").submit(function(e) {
+        let validate_input_form = true;
+
+        e.preventDefault(); // Prevent the default form submission behavior
+        Swal.fire({
+            title: 'Buat User?',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Simpan!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-sm btn-danger mb-3',
+            },
+            buttonsStyling: false,
+
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swalProcess();
+                $("#form_user").unbind('submit').submit();
+            }
+        });
+    });
 </script>
