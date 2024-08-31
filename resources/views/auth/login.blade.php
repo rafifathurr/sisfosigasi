@@ -43,15 +43,18 @@
                             </div>
                         </div>
                         <div class="mt-4 mb-3">
-                            <button type="submit" class="btn btn-sm btn-primary w-100 font-weight-bold">
+                            <button type="submit" class="btn btn-sm btn-primary w-100 font-weight-bold rounded-pill">
                                 Login
-                            </button>
+                            </button>                            
                         </div>
                         <div class="text-center">
                             
                         </div>
                     </form>
-                </div>
+                    <a href="{{ route('registrasi') }}" class="btn btn-sm btn-info w-100 font-weight-bold rounded-pill">
+                        Registrasi
+                    </a>
+                                    </div>
             </div>
         </div>
     </div>
