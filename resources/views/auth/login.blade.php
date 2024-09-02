@@ -6,13 +6,13 @@
     }
 </style>
 <div class="container">
-    <div class="row justify-content-center"style="height: 100vh;">
+    <div class="row justify-content-center" style="height: 100vh;">
         <div class="col-md-6 d-flex align-items-center justify-content-center">
             <div class="shadow card w-100">
                 <div class="card-header">
                     <h3 class="card-title font-weight-bold"><i class="fas fa-sign-in-alt mr-2"></i>Login</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body pb-1">
                     <form method="POST" action="{{ route('authenticate') }}">
                         @csrf
                         <div class="mb-3">
@@ -42,39 +42,21 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="mt-4 mb-3">
-                            <button type="submit" class="btn btn-sm btn-primary w-100 font-weight-bold rounded-pill">
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-sm btn-primary btn-block font-weight-bold">
                                 Login
-                            </button>                            
-                        </div>
-                        <div class="text-center">
-
+                            </button>
                         </div>
                     </form>
-                    <a href="{{ route('registrasi') }}" class="btn btn-sm btn-info w-100 font-weight-bold rounded-pill">
-                        Registrasi
-                    </a>
-                                    </div>
+                </div>
+                <div class="card-footer text-center bg-white border-top">
+                    <p class="mb-0">Tidak Punya Akun? <a href="{{ route('registrasi') }}">Registrasi Disini</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 @include('layouts.script')
-@if (session('success_message'))
-    <script>
-        Swal.fire({
-            icon: 'info',
-            title: 'Info',
-            text: '{{ session('success_message') }}',
-            customClass: {
-                confirmButton: 'btn btn-outline-primary',
-            },
-            buttonsStyling: false,
-        });
-    </script>
-@endif
-
 <script>
     function togglePasswordVisibility() {
         var passwordInput = document.getElementById("password_hash");
