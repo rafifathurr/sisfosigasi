@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::get('registrasi', [\App\Http\Controllers\AuthController::class, 'registrasi'])->name('registrasi');
 Route::post('authenticate', [\App\Http\Controllers\AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+Route::post('store-user', [\App\Http\Controllers\AuthController::class, 'store'])->name('store-user');
 
 /**
  * Home Route
