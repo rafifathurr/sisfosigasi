@@ -31,4 +31,24 @@
     <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+    <!-- Leaflet Packages -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css" />
+
+    <!-- CSRF -->
+    <meta name="token" content="{{ csrf_token() }}">
+    <style>
+        #map {
+            height: 620px;
+        }
+
+        .leaflet-control-locate {
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>

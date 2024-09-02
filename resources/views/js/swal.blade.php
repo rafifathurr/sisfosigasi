@@ -4,7 +4,7 @@
             icon: 'success',
             title: '{{ Session::get('success') }}',
             customClass: {
-                confirmButton: 'btn btn-outline-primary mb-3',
+                confirmButton: 'btn btn-primary mb-3',
             },
             buttonsStyling: false,
             timer: 1500,
@@ -19,7 +19,7 @@
             icon: 'warning',
             title: '{{ Session::get('failed') }}',
             customClass: {
-                confirmButton: 'btn btn-outline-primary mb-3',
+                confirmButton: 'btn btn-primary mb-3',
             },
             buttonsStyling: false,
             timer: 1500,
@@ -45,7 +45,7 @@
             icon: 'warning',
             title: messages,
             customClass: {
-                confirmButton: 'btn btn-outline-primary mb-3',
+                confirmButton: 'btn btn-primary mb-3',
             },
             buttonsStyling: false,
             timer: 1500,

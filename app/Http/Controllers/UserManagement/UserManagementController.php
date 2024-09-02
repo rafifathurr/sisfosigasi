@@ -17,16 +17,24 @@ class UserManagementController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(function ($request, $next) {
-            if (User::find(Auth::user()->id)->hasRole(['super-admin', 'pemerintah'])) {
-                return $next($request);
-            }
-            return redirect('/');
-        });
+        /**
+         * Super Admin Access
+         */
+        $this->middleware('role:super-admin', ['except' => [
+            'index', 'show', 'dataTable'
+        ]]);
+
+        /**
+         * Super Admin and Pemerintah Access
+         */
+        $this->middleware('role:super-admin|pemerintah', ['except' => [
+            'create', 'store', 'edit', 'update', 'destroy'
+        ]]);
     }
     public function index()
     {
-        return view('user_management.index');
+        $data['has_create_access'] = User::find(Auth::user()->id)->hasRole(['super-admin']);
+        return view('user_management.index', $data);
     }
 
     public function dataTable(Request $request)
@@ -72,10 +80,10 @@ class UserManagementController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'phone' => 'required|max:255',
+                'phone' => 'required|max:13',
                 'username' => 'required|string|max:255|unique:users',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
+                'password' => 'required|string|confirmed',
                 'role' => 'required|exists:roles,id',
             ]);
 
@@ -131,7 +139,7 @@ class UserManagementController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => 'user gagal di hapus',
+                    'message' => 'User Gagal Dihapus',
                 ]);
             }
         } catch (Exception $e) {
@@ -196,7 +204,7 @@ class UserManagementController extends Controller
             } else {
                 return redirect()
                     ->back()
-                    ->with(['failed' => 'Invalid Request!']);
+                    ->with(['failed' => 'Data Tidak Ditemukan']);
             }
         } catch (Exception $e) {
             return redirect()
@@ -210,11 +218,10 @@ class UserManagementController extends Controller
         try {
             $data = $request->validate([
                 'name' => 'required|string|max:255',
-                'address' => 'nullable|min:8',
-                'phone' => 'required|max:255',
+                'phone' => 'required|max:13',
                 'username' => 'required|string|max:255|unique:users,username,' . $request->id,
                 'email' => 'required|string|email|max:255|unique:users,email,' . $request->id,
-                'password' => 'nullable|min:8|confirmed',
+                'password' => 'nullable|confirmed',
             ]);
 
             // Cek jika password diisi, jika tidak unset dari $data

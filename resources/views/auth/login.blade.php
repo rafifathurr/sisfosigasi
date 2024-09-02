@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row justify-content-center"style="height: 100vh;">
         <div class="col-md-6 d-flex align-items-center justify-content-center">
-            <div class="card w-100">
+            <div class="shadow card w-100">
                 <div class="card-header">
                     <h3 class="card-title font-weight-bold"><i class="fas fa-sign-in-alt mr-2"></i>Login</h3>
                 </div>
@@ -48,7 +48,7 @@
                             </button>
                         </div>
                         <div class="text-center">
-                            
+
                         </div>
                     </form>
                 </div>

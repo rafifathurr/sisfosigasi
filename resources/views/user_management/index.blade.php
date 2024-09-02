@@ -9,10 +9,12 @@
                             <h3 class="card-title font-weight-bold">Manajemen User</h3>
                         </div>
                         <div class="card-body">
-                            <a href="{{ route('user-management.create') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus mr-1"></i>
-                                Tambah User
-                            </a>
+                            @if ($has_create_access)
+                                <a href="{{ route('user-management.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus mr-1"></i>
+                                    Tambah User
+                                </a>
+                            @endif
                             <div class="table-responsive mt-3">
                                 <table class="table table-bordered table-hover w-100 datatable">
                                     <thead>

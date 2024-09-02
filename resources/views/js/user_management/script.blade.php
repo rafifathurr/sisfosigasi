@@ -93,8 +93,8 @@
             text: "You won't be able to revert this!",
             icon: "warning",
             customClass: {
-                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
-                cancelButton: 'btn btn-sm btn-danger mb-3',
+                confirmButton: 'btn btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-danger mb-3',
             },
             buttonsStyling: false,
 
@@ -143,8 +143,8 @@
             confirmButtonText: 'Ya, Simpan!',
             cancelButtonText: 'Batal',
             customClass: {
-                confirmButton: 'btn btn-sm btn-primary mr-2 mb-3',
-                cancelButton: 'btn btn-sm btn-danger mb-3',
+                confirmButton: 'btn btn-primary mr-2 mb-3',
+                cancelButton: 'btn btn-danger mb-3',
             },
             buttonsStyling: false,
 

@@ -26,23 +26,29 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('home');
 
     Route::group(['controller' => \App\Http\Controllers\UserManagement\UserManagementController::class, 'prefix' => 'user-management', 'as' => 'user-management.'], function () {
+        // Get Method
         Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
         Route::get('data-table', 'dataTable')->name('dataTable');
         Route::get('show/{id}', 'show')->name('show');
         Route::get('edit/{id}', 'edit')->name('edit');
-        Route::post('destory', 'destory')->name('destory');
-        Route::get('create', 'create')->name('create');
+
+        // Post Method
         Route::post('store', 'store')->name('store');
         Route::post('update', 'update')->name('update');
-        Route::get('validation/{id}', 'validation')->name('validation');
+        Route::post('destory', 'destory')->name('destory');
+        // Route::get('validation/{id}', 'validation')->name('validation');
     });
 
     Route::group(['controller' => \App\Http\Controllers\AgeVulnerabilityClassification\AgeVulnerabilityClassificationControler::class, 'prefix' => 'age-vulnerability-classification', 'as' => 'age-vulnerability-classification.'], function () {
+        // Get Method
         Route::get('/', 'index')->name('index');
-        Route::post('/store', 'store')->name('store');
-        Route::post('/update', 'update')->name('update');
-        Route::post('/delete', 'delete')->name('delete');
-        Route::get('/show', 'show')->name('show');
-        Route::get('/checkLastAge', 'checkLastAge')->name('checkLastAge');
+        Route::get('show', 'show')->name('show');
+        Route::get('checkLastAge', 'checkLastAge')->name('checkLastAge');
+
+        // Post Method
+        Route::post('store', 'store')->name('store');
+        Route::post('update', 'update')->name('update');
+        Route::post('delete', 'delete')->name('delete');
     });
 });
