@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -30,29 +31,12 @@ class Handler extends ExceptionHandler
         });
     }
 
-    function render($request, Throwable $exception)
-    {
-        if ($exception instanceof HttpExceptionInterface) {
-            if ($exception->getStatusCode() == 403) {
-                if (Auth::check()) {
-                    return redirect()
-                        ->back()
-                        ->with(['failed' => 'Anda Tidak Memiliki Akses']);
-                } else {
-                    return redirect()->route('logout');
-                }
-            }
+    protected function unauthenticated($request, AuthenticationException $ex){
 
-            if ($exception->getStatusCode() == 404) {
-                return redirect()
-                    ->back()
-                    ->with(['failed' => 'URL Tidak Ditemukan']);
-            }
-
-            if ($exception->getStatusCode() == 419) {
-                return redirect()->route('logout');
-            }
+        if( $request->is('api/*') ) {
+            return response()->json(['success' => false, 'message' => $ex->getMessage()], 401);
         }
-        return parent::render($request, $exception);
+
+        return redirect('/login');
     }
 }
