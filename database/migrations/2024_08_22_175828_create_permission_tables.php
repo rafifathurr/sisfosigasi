@@ -34,6 +34,7 @@ return new class extends Migration
         // });
 
         Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id'); // role id
             if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
                 $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
@@ -74,6 +75,8 @@ return new class extends Migration
         // });
 
         Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+            $table->engine = 'InnoDB';
+
             $table->unsignedBigInteger($pivotRole);
 
             $table->string('model_type');
