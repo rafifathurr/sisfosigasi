@@ -13,14 +13,44 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-        $admin_account = User::create([
-            'name' => 'Super Admin',
-            'username' => 'super_admin',
+        $posko_utama = User::create([
+            'name' => 'posko utama',
+            'username' => 'posko_utama',
             'phone' => '081122334455',
-            'email' => 'super-admin@sisfosigasi.com',
-            'password'=> bcrypt('superadmin')
+            'email' => 'posko-utama@sisfosigasi.com',
+            'password'=> bcrypt('admin123')
         ]);
 
-        $admin_account->assignRole('super-admin');
+        $posko_utama->assignRole('posko-utama');
+
+        $posko = User::create([
+            'name' => 'posko',
+            'username' => 'posko',
+            'phone' => '081122334455',
+            'email' => 'posko@sisfosigasi.com',
+            'password'=> bcrypt('admin123')
+        ]);
+
+        $posko->assignRole('posko');
+
+        $bansos = User::create([
+            'name' => 'bansos',
+            'username' => 'bansos',
+            'phone' => '081122334455',
+            'email' => 'bansos@sisfosigasi.com',
+            'password'=> bcrypt('admin123')
+        ]);
+
+        $bansos->assignRole('bansos');
+
+        $kecamatan = User::create([
+            'name' => 'kecamatan',
+            'username' => 'kecamatan',
+            'phone' => '081122334455',
+            'email' => 'kecamatan@sisfosigasi.com',
+            'password'=> bcrypt('admin123')
+        ]);
+
+        $kecamatan->assignRole('kecamatan');
     }
 }
