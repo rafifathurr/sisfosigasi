@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('Nama', 20);
             $table->string('NomorKontak', 12);
             $table->string('Satuan', 10)->nullable();
-            $table->integer('IDPosko');
+            $table->integer('IDPosko')->nullable();
 
             $table->foreign('IDPosko')->references('IDPosko')->on('posko');
 
