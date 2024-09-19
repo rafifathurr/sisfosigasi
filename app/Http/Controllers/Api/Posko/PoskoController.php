@@ -35,7 +35,7 @@ class PoskoController extends Controller
     public function show($id)
     {
         $posko = Posko::where('IDPosko', $id)->with('pengguna')->first();
-        return response()->json($posko, 200); // Mengembalikan response JSON dengan status 201
+        return response()->json($posko, 200); // Mengembalikan response JSON dengan status 200
 
     }
 
@@ -89,5 +89,62 @@ class PoskoController extends Controller
             return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
 
         }
+    }
+
+    public function edit($id)
+    {
+        $posko = Posko::where('IDPosko', $id)->with('pengguna')->first();
+        $pengguna = Pengguna::whereNull('IdPosko')->get();
+        $data['posko'] = $posko;
+        $data['pengguna'] = $pengguna;
+        return response()->json($data, 200); // Mengembalikan response JSON dengan status 200
+
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'idPengguna' => 'required|string|max:255', // Validasi nama
+                'location' => 'required|string|max:50', // Validasi nomor kontak
+                'problem' => 'required|string|max:255', // Validasi problem
+                'solution' => 'required|string|max:255', // Validasi problem
+
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422); // Gunakan status 422 untuk validasi gagal
+            }
+
+            DB::beginTransaction();
+            $posko = Posko::where('IDPosko', $id)->lockForUpdate()->update([
+                'Ketua' => $request->idPengguna,
+                'Lokasi' => $request->location,
+                'Masalah' => $request->problem,
+                'SolusiMasalah' => $request->solution,
+
+            ]);
+            if ($posko) {
+                $pengguna = Pengguna::where('IDPengguna', $request->idPengguna)->lockForUpdate()->update([
+                    'IDPosko' => $id
+                ]);
+                if ($pengguna) {
+                    DB::commit();
+                    return response()->json('data berhasil diupdate', 201); // Mengembalikan response JSON dengan status 201
+                }else{
+                    DB::rollBack();
+                    return response()->json(['error' => 'Data pengguna tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+
+                }
+            } else {
+                DB::rollBack();
+                return response()->json(['error' => 'Data posko tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+            }
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Data tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+            return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
+
+        }
+
     }
 }
