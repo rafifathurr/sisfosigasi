@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Pengguna\PenggunaController;
+use App\Http\Controllers\Api\Posko\PoskoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +20,36 @@ Route::post('authenticate', [\App\Http\Controllers\Api\AuthController::class, 'a
 Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('refresh', [\App\Http\Controllers\Api\AuthController::class, 'refresh']);
+// Route::post('store', [\App\Http\Controllers\Api\Posko\PoskoController::class, 'store']);
 
-Route::middleware('auth:api')->post('user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:api')->post('user', function (Request $request) {
+//     Route::group(['controller' => PoskoController::class, 'prefix' => 'posko'], function () {
+//         Route::get('index', 'index');
+//         Route::get('show', 'show');
+//         Route::get('list-product', 'listProduct');
+//         Route::post('store', 'store');
+//         Route::get('regencies', 'regencies');
+//     });
+//     return $request->user();
+
+
+// });
+Route::middleware('auth:api')->group(function () {
+    Route::post('user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::controller(PoskoController::class)->prefix('posko')->group(function () {
+        Route::get('index', 'index');
+        Route::get('show/{id}', 'show');
+        Route::post('store', 'store');
+        Route::get('create', 'create');
+
+    });
+    Route::controller(PenggunaController::class)->prefix('pengguna')->group(function () {
+        Route::get('index', 'index');
+        Route::get('show', 'show');
+        Route::post('store', 'store');
+    });
 });
+
