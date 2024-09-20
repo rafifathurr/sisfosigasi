@@ -71,8 +71,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', 'show');
         Route::post('store', 'store');
         Route::get('create', 'create');
-        Route::get('edit/{id}', 'edit');
-        Route::put('update/{id}', 'update');
+        Route::get('qtyReceived', 'qtyReceived');
     });
 
     Route::middleware('role:kecamatan')->group(function () {
