@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
+use App\Http\Controllers\Kecamatan\BarangController;
 use App\Http\Controllers\Pengungsi\PengungsiController;
+use App\Models\Barang\JenisBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,7 +49,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('create', 'create');
         Route::get('edit/{id}', 'edit');
         Route::put('update/{id}', 'update');
-
     });
 
     Route::controller(PenggunaController::class)->prefix('pengguna')->group(function () {
@@ -65,5 +66,19 @@ Route::middleware('auth:api')->group(function () {
         Route::put('update/{id}', 'update');
     });
 
-});
+    Route::middleware('role:kecamatan')->group(function () {
+        Route::controller(BarangController::class)->prefix('barang')->group(function () {
+            Route::get('index', 'index');
+            Route::post('store', 'store');
+            Route::get('show/{id}', 'show');
+            Route::put('update/{id}', 'update');
+        });
 
+        Route::controller(JenisBarang::class)->prefix('jenis-barang')->group(function () {
+            Route::get('index', 'index');
+            Route::post('store', 'store');
+            Route::get('show/{id}', 'show');
+            Route::put('update/{id}', 'update');
+        });
+    });
+});
