@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
+use App\Http\Controllers\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Pengungsi\PengungsiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +65,16 @@ Route::middleware('auth:api')->group(function () {
         Route::get('edit/{id}', 'edit');
         Route::put('update/{id}', 'update');
     });
+
+    Route::controller(KebutuhanController::class)->prefix('kebutuhan')->group(function () {
+        Route::get('index', 'index');
+        Route::get('show/{id}', 'show');
+        Route::post('store', 'store');
+        Route::get('create', 'create');
+        Route::get('edit/{id}', 'edit');
+        Route::put('update/{id}', 'update');
+    });
+
 
 });
 
