@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
+use App\Http\Controllers\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Kecamatan\BarangController;
 use App\Http\Controllers\Pengungsi\PengungsiController;
 use App\Models\Barang\JenisBarang;
@@ -23,7 +24,6 @@ Route::post('authenticate', [\App\Http\Controllers\Api\AuthController::class, 'a
 Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('refresh', [\App\Http\Controllers\Api\AuthController::class, 'refresh']);
-// Route::post('store', [\App\Http\Controllers\Api\Posko\PoskoController::class, 'store']);
 
 // Route::middleware('auth:api')->post('user', function (Request $request) {
 //     Route::group(['controller' => PoskoController::class, 'prefix' => 'posko'], function () {
@@ -66,6 +66,15 @@ Route::middleware('auth:api')->group(function () {
         Route::put('update/{id}', 'update');
     });
 
+    Route::controller(KebutuhanController::class)->prefix('kebutuhan')->group(function () {
+        Route::get('index', 'index');
+        Route::get('show/{id}', 'show');
+        Route::post('store', 'store');
+        Route::get('create', 'create');
+        Route::get('edit/{id}', 'edit');
+        Route::put('update/{id}', 'update');
+    });
+
     Route::middleware('role:kecamatan')->group(function () {
         Route::controller(BarangController::class)->prefix('barang')->group(function () {
             Route::get('index', 'index');
@@ -81,4 +90,5 @@ Route::middleware('auth:api')->group(function () {
             Route::put('update/{id}', 'update');
         });
     });
+
 });

@@ -20,12 +20,12 @@ class PengungsiController extends Controller
         /**
          * Super Admin Access
          */
-        $this->middleware('role:posko-utama', ['except' => ['index', 'show']]);
+        $this->middleware('role:posko-utama|posko', ['except' => ['index', 'show']]);
 
         /**
          * Super Admin and Pemerintah Access
          */
-        $this->middleware('role:posko-utama|pemerintah', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
+        $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
     }
     public function index()
     {
