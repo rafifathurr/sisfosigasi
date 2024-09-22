@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Donatur\DonaturController;
 use App\Http\Controllers\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Kecamatan\BarangController;
@@ -121,4 +122,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('show/{id}', 'show');
         Route::put('update/{id}', 'update');
     });
+
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });

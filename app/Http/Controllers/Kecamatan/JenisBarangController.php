@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kecamatan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Barang\JenisBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,10 +26,10 @@ class JenisBarangController extends Controller
 
             if (!is_null($jenis_barang)) {
 
-                return response()->json($jenis_barang, 200);
+                return ApiResponse::success($jenis_barang);
             }
 
-            return response()->json(404);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
@@ -59,11 +60,11 @@ class JenisBarangController extends Controller
             if ($store_jenis_barang) {
 
                 DB::commit();
-                return response()->json(201);
+                return ApiResponse::created();
             }
 
             DB::rollback();
-            return response()->json(400);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             DB::rollback();
@@ -82,10 +83,10 @@ class JenisBarangController extends Controller
 
             if (!is_null($jenis_barang)) {
 
-                return response()->json($jenis_barang, 200);
+                return ApiResponse::success($jenis_barang);
             }
 
-            return response()->json($jenis_barang, 400);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
@@ -115,10 +116,10 @@ class JenisBarangController extends Controller
 
             if ($update_jenis_barang == 1) {
 
-                return response()->json(200);
+                return ApiResponse::success();
             }
 
-            return response()->json(400);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
