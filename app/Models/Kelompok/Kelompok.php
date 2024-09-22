@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Models\Barang;
+namespace App\Models\Kelompok;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JenisBarang extends Model
+class Kelompok extends Model
 {
     use HasFactory;
-
-    protected $table = 'jenis_barang';
-    protected $primaryKey = 'IDJenisBarang';
+    protected $table = 'kelompok';
     protected $guarded = [];
     public $timestamps = false;
 }

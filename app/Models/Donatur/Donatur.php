@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Models\Barang;
+namespace App\Models\Donatur;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JenisBarang extends Model
+class Donatur extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenis_barang';
-    protected $primaryKey = 'IDJenisBarang';
+    protected $table = 'donatur';
     protected $guarded = [];
     public $timestamps = false;
 }

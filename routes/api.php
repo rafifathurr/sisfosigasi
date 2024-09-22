@@ -2,9 +2,14 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
+use App\Http\Controllers\Donatur\DonaturController;
 use App\Http\Controllers\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Kecamatan\BarangController;
+use App\Http\Controllers\Kecamatan\JenisBarangController;
+use App\Http\Controllers\Kelompok\KelompokController;
+use App\Http\Controllers\Penduduk\PendudukController;
 use App\Http\Controllers\Pengungsi\PengungsiController;
+use App\Models\Bantuan\Bantuan;
 use App\Models\Barang\JenisBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -74,20 +79,46 @@ Route::middleware('auth:api')->group(function () {
         Route::get('qtyReceived', 'qtyReceived');
     });
 
-    Route::middleware('role:kecamatan')->group(function () {
-        Route::controller(BarangController::class)->prefix('barang')->group(function () {
-            Route::get('index', 'index');
-            Route::post('store', 'store');
-            Route::get('show/{id}', 'show');
-            Route::put('update/{id}', 'update');
-        });
-
-        Route::controller(JenisBarang::class)->prefix('jenis-barang')->group(function () {
-            Route::get('index', 'index');
-            Route::post('store', 'store');
-            Route::get('show/{id}', 'show');
-            Route::put('update/{id}', 'update');
-        });
+    Route::controller(BarangController::class)->prefix('barang')->group(function () {
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
     });
 
+    Route::controller(JenisBarangController::class)->prefix('jenis-barang')->group(function () {
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
+    });
+
+    Route::controller(KelompokController::class)->prefix('kelompok')->group(function () {
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
+    });
+
+    Route::controller(PendudukController::class)->prefix('penduduk')->group(function () {
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
+    });
+
+    Route::controller(DonaturController::class)->prefix('donatur')->group(function () {
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
+    });
+
+    Route::controller(Bantuan::class)->prefix('bantuan')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/createOrEdit', 'createOrEdit');
+        Route::post('store', 'store');
+        Route::get('show/{id}', 'show');
+        Route::put('update/{id}', 'update');
+    });
 });

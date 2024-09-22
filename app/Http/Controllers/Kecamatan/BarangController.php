@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:kecematan');
+    }
     public function index()
     {
 
@@ -39,9 +43,9 @@ class BarangController extends Controller
 
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'nama_barnag' => 'required|string|max:255',
+                'nama_barang' => 'required|string|max:255',
                 'jenis_barang' => 'required|integer|max:15',
-                'harga_satuan' => 'required|integer|max:50',
+                'harga_satuan' => 'required|integer',
             ]);
 
             if ($validator->fails()) {
@@ -57,13 +61,16 @@ class BarangController extends Controller
 
             if ($barang) {
 
+                DB::commit();
                 return response()->json(201);
             } else {
 
+                DB::rollback();
                 return response()->json(400);
             }
         } catch (\Throwable $th) {
 
+            DB::rollback();
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
@@ -79,7 +86,7 @@ class BarangController extends Controller
                 return response()->json($barang, 200);
             }
 
-            return response()->json(404);
+            return response()->json(['message' => 'Not Found'], 404);
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
@@ -93,9 +100,9 @@ class BarangController extends Controller
 
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'nama_barnag' => 'required|string|max:255',
+                'nama_barang' => 'required|string|max:255',
                 'jenis_barang' => 'required|integer|max:15',
-                'harga_satuan' => 'required|integer|max:50',
+                'harga_satuan' => 'required|integer',
             ]);
 
             if ($validator->fails()) {

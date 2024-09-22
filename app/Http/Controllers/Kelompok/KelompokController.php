@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Kecamatan;
+namespace App\Http\Controllers\Kelompok;
 
 use App\Http\Controllers\Controller;
-use App\Models\Barang\JenisBarang;
+use App\Http\Helpers\ApiResponse;
+use App\Models\Kelompok\Kelompok;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class JenisBarangController extends Controller
+class KelompokController extends Controller
 {
     public function __construct()
     {
@@ -21,17 +22,17 @@ class JenisBarangController extends Controller
     {
         try {
 
-            $jenis_barang = JenisBarang::all();
+            $kelompok = Kelompok::all();
 
-            if (!is_null($jenis_barang)) {
+            if ($kelompok->isNotEmpty()) {
 
-                return response()->json($jenis_barang, 200);
+                return ApiResponse::success($kelompok);
             }
 
-            return response()->json(404);
+            return ApiResponse::notFound();
         } catch (\Throwable $th) {
 
-            return response()->json(['message' => $th->getMessage()], 500);
+            return ApiResponse::badRequest($th->getMessage());
         }
     }
 
@@ -44,30 +45,29 @@ class JenisBarangController extends Controller
 
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'jenis_barang' => 'required|string|max:15',
+                'nama_kelompok' => 'required|string|max:20',
+                'keterangan' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
-            $store_jenis_barang = JenisBarang::lockForUpdate()->create([
-                'JenisBarang' => $request->jenis_barang,
-                'LastUpdateDate' => now()
+            $store = Kelompok::lockForUpdate()->create([
+                'NamaKelompok' => $request->nama_kelompok,
+                'Keterangan' => $request->keterangan
             ]);
 
-            if ($store_jenis_barang) {
-
+            if ($store) {
                 DB::commit();
-                return response()->json(201);
+                return ApiResponse::created();
             }
 
             DB::rollback();
-            return response()->json(400);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
-            DB::rollback();
-            return response()->json(['message' => $th->getMessage()], 500);
+            return ApiResponse::badRequest($th->getMessage());
         }
     }
 
@@ -78,17 +78,16 @@ class JenisBarangController extends Controller
     {
         try {
 
-            $jenis_barang = JenisBarang::where('IDJenisBarang', $id)->first();
+            $kelompok = Kelompok::where('IDKelompok', $id)->first();
 
-            if (!is_null($jenis_barang)) {
+            if (!is_null($kelompok)) {
 
-                return response()->json($jenis_barang, 200);
+                return ApiResponse::success($kelompok);
             }
 
-            return response()->json($jenis_barang, 400);
+            return ApiResponse::notFound();
         } catch (\Throwable $th) {
-
-            return response()->json(['message' => $th->getMessage()], 500);
+            //throw $th;
         }
     }
 
@@ -101,27 +100,29 @@ class JenisBarangController extends Controller
 
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'jenis_barang' => 'required|string|max:15',
+                'nama_kelompok' => 'required|string|max:20',
+                'keterangan' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
-            $update_jenis_barang = JenisBarang::where('IDJenisBarang', $id)->update([
-                'JenisBarang' => $request->jenis_barang,
-                'LastUpdateDate' => now()
+            $update = Kelompok::lockForUpdate()->where('IDKelompok', $id)->update([
+                'NamaKelompok' => $request->nama_kelompok,
+                'Keterangan' => $request->keterangan
             ]);
 
-            if ($update_jenis_barang == 1) {
-
-                return response()->json(200);
+            if ($update) {
+                DB::commit();
+                return ApiResponse::success();
             }
 
-            return response()->json(400);
+            DB::rollback();
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
-            return response()->json(['message' => $th->getMessage()], 500);
+            return ApiResponse::badRequest($th->getMessage());
         }
     }
 
