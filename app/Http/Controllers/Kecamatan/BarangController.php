@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kecamatan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Barang\Barang;
 use App\Models\Barang\JenisBarang;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class BarangController extends Controller
     {
         $this->middleware('role:kecematan');
     }
+
     public function index()
     {
 
@@ -24,10 +26,10 @@ class BarangController extends Controller
 
             if (!is_null($barang)) {
 
-                return response()->json($barang, 200);
+                return ApiResponse::success($barang);
             } else {
 
-                return response()->json(401);
+                return ApiResponse::notFound();
             }
         } catch (\Throwable $th) {
 
@@ -62,11 +64,11 @@ class BarangController extends Controller
             if ($barang) {
 
                 DB::commit();
-                return response()->json(201);
+                return ApiResponse::created();
             } else {
 
                 DB::rollback();
-                return response()->json(400);
+                return ApiResponse::badRequest();
             }
         } catch (\Throwable $th) {
 
@@ -83,10 +85,10 @@ class BarangController extends Controller
 
             if (!is_null($barang)) {
 
-                return response()->json($barang, 200);
+                return ApiResponse::success($barang);
             }
 
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
@@ -119,11 +121,11 @@ class BarangController extends Controller
             if ($update_barang == 1) {
 
                 DB::commit();
-                return response()->json(200);
+                return ApiResponse::success();
             }
 
             DB::rollBack();
-            return response()->json(400);
+            return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
             DB::rollback();
