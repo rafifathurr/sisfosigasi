@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Bantuan_Dtl extends Model
 {
     use HasFactory;
-    protected $table = 'bantuan';
+    protected $table = 'bantuan_dtl';
     protected $guarded = [];
     public $timestamps = false;
 
