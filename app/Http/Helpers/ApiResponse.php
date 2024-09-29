@@ -11,13 +11,16 @@ class ApiResponse
      * @param mixed $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function success($data = null, $message = 'sucess')
+    public static function success($data = null, $message = 'Sucess')
     {
-        return response()->json([
-            'status' => 200,
-            'message' => $message,
-            'data' => $data
-        ], 200);
+        return response()->json(
+            [
+                'status' => 200,
+                'message' => $message,
+                'data' => $data,
+            ],
+            200,
+        );
     }
 
     /**
@@ -27,13 +30,16 @@ class ApiResponse
      * @param mixed $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function created($data = null, $message = 'created')
+    public static function created($data = null, $message = 'Created')
     {
-        return response()->json([
-            'status' => 201,
-            'message' => $message,
-            'data' => $data
-        ], 201);
+        return response()->json(
+            [
+                'status' => 201,
+                'message' => $message,
+                'data' => $data,
+            ],
+            201,
+        );
     }
 
     /**
@@ -43,13 +49,16 @@ class ApiResponse
      * @param mixed $data
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function badRequest($data = null, $message = 'Bad request')
+    public static function badRequest($data = null, $message = 'Bad Request')
     {
-        return response()->json([
-            'status' => 400,
-            'message' => $message,
-            'data' => $data
-        ], 400);
+        return response()->json(
+            [
+                'status' => 400,
+                'message' => $message,
+                'data' => $data,
+            ],
+            400,
+        );
     }
 
     /**
@@ -58,12 +67,51 @@ class ApiResponse
      * @param string $message
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function notFound($message = 'not found')
+    public static function notFound($message = 'Not Found')
     {
-        return response()->json([
-            'status' => 404,
-            'message' => $message,
-            'data' => null
-        ], 404);
+        return response()->json(
+            [
+                'status' => 404,
+                'message' => $message,
+                'data' => null,
+            ],
+            404,
+        );
+    }
+
+    /**
+     * Response untuk status 401 Not Found
+     *
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function unauthorized($message = 'Unauthorized')
+    {
+        return response()->json(
+            [
+                'status' => 401,
+                'message' => $message,
+                'data' => null,
+            ],
+            401,
+        );
+    }
+
+    /**
+     * Response untuk status 403 Not Found
+     *
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function forbidden($message = 'Forbidden')
+    {
+        return response()->json(
+            [
+                'status' => 403,
+                'message' => $message,
+                'data' => null,
+            ],
+            403,
+        );
     }
 }

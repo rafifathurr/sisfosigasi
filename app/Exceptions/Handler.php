@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Http\Helpers\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
@@ -34,9 +35,21 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $ex){
 
         if( $request->is('api/*') ) {
-            return response()->json(['success' => false, 'message' => $ex->getMessage()], 401);
+            return ApiResponse::unauthorized();
         }
 
         return redirect('/login');
+    }
+
+    function render($request, Throwable $exception)
+    {
+        if ($exception instanceof HttpExceptionInterface) {
+            if ($exception->getStatusCode() == 403) {
+                if( $request->is('api/*') ) {
+                    return ApiResponse::forbidden();
+                }
+            }
+        }
+        return parent::render($request, $exception);
     }
 }
