@@ -127,8 +127,7 @@ class BantuanController extends Controller
                 'donatur'
             ])
                 ->where('IDBantuan', $id)
-                ->orderBy('IDBantuan', 'desc')
-                ->get();
+                ->first();
 
             if (!is_null($bantuan)) {
 
