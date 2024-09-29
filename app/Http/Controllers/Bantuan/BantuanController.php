@@ -16,7 +16,7 @@ class BantuanController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:kecematan');
+        $this->middleware('role:kecamatan');
     }
     /**
      * Display a listing of the resource.

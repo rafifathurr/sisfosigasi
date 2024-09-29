@@ -14,7 +14,7 @@ class BarangController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:kecematan');
+        $this->middleware('role:kecamatan');
     }
 
     public function index()
