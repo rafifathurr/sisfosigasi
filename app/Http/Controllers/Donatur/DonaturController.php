@@ -15,7 +15,7 @@ class DonaturController extends Controller
 
     public function __construct()
     {
-        $this->middleware('role:kecematan');
+        $this->middleware('role:bansos');
     }
     /**
      * Display a listing of the resource.
