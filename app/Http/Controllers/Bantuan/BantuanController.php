@@ -91,8 +91,8 @@ class BantuanController extends Controller
 
                     $bantuan_detail = Bantuan_Dtl::lockForUpdate()->insert([
                         'IDBantuan' => $bantuan->IDBantuan,
-                        'IDBarang' => $item->id_barang,
-                        'Jumlah' => $item->jumlah_barang,
+                        'IDBarang' => $item['id_barang'],
+                        'Jumlah' => $item['jumlah_barang'],
                     ]);
                 }
 
