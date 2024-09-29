@@ -89,7 +89,7 @@ class DonaturController extends Controller
 
             $donatur = Donatur::where('IDDonatur', $id)->first();
 
-            if ($donatur->isNotEmpty()) {
+            if (!is_null($donatur)) {
 
                 return ApiResponse::success($donatur);
             }
