@@ -120,7 +120,7 @@ class DonaturController extends Controller
                 return response()->json($validator->errors(), 422);
             }
 
-            $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->create([
+            $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->update([
                 'NamaPerusahaan' => $request->nama_perusahaan,
                 'Alamat' => $request->alamat,
                 'NomorKontak' => $request->nomor_kontak,

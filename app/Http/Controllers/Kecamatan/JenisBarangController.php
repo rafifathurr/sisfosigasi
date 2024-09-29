@@ -116,6 +116,7 @@ class JenisBarangController extends Controller
 
             if ($update_jenis_barang == 1) {
 
+                DB::commit();
                 return ApiResponse::success();
             }
 
