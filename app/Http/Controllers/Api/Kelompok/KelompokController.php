@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Donatur;
+namespace App\Http\Controllers\Api\Kelompok;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
-use App\Models\Donatur\Donatur;
+use App\Models\Kelompok\Kelompok;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class DonaturController extends Controller
+class KelompokController extends Controller
 {
-
     public function __construct()
     {
-        $this->middleware('role:bansos');
+        $this->middleware('role:kecamatan');
     }
     /**
      * Display a listing of the resource.
@@ -24,14 +22,9 @@ class DonaturController extends Controller
     {
         try {
 
-            $donatur = Donatur::all();
+            $kelompok = Kelompok::all();
 
-            if ($donatur->isNotEmpty()) {
-
-                return ApiResponse::success($donatur);
-            }
-
-            return ApiResponse::notFound();
+            return ApiResponse::success($kelompok);
         } catch (\Throwable $th) {
 
             return ApiResponse::badRequest($th->getMessage());
@@ -46,27 +39,21 @@ class DonaturController extends Controller
         try {
 
             DB::beginTransaction();
-
             $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'nullable|string|max:50',
-                'alamat' => 'required|string|max:255',
-                'nomor_kontak' => 'required|string|max:16',
+                'nama_kelompok' => 'required|string|max:20',
+                'keterangan' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
-            $donatur = Donatur::lockForUpdate()->create([
-                'NamaPerusahaan' => $request->nama_perusahaan,
-                'Alamat' => $request->alamat,
-                'NomorKontak' => $request->nomor_kontak,
-                'LastUpdateDate' => now(),
-                'LastUpdateBy' => Auth::user()->id
+            $store = Kelompok::lockForUpdate()->create([
+                'NamaKelompok' => $request->nama_kelompok,
+                'Keterangan' => $request->keterangan
             ]);
 
-            if ($donatur) {
-
+            if ($store) {
                 DB::commit();
                 return ApiResponse::created();
             }
@@ -75,7 +62,6 @@ class DonaturController extends Controller
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
-            DB::rollback();
             return ApiResponse::badRequest($th->getMessage());
         }
     }
@@ -87,17 +73,16 @@ class DonaturController extends Controller
     {
         try {
 
-            $donatur = Donatur::where('IDDonatur', $id)->first();
+            $kelompok = Kelompok::where('IDKelompok', $id)->first();
 
-            if (!is_null($donatur)) {
+            if (!is_null($kelompok)) {
 
-                return ApiResponse::success($donatur);
+                return ApiResponse::success($kelompok);
             }
 
             return ApiResponse::notFound();
         } catch (\Throwable $th) {
-
-            return ApiResponse::badRequest($th->getMessage());
+            //throw $th;
         }
     }
 
@@ -109,36 +94,29 @@ class DonaturController extends Controller
         try {
 
             DB::beginTransaction();
-
             $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'nullable|string|max:50',
-                'alamat' => 'required|string|max:255',
-                'nomor_kontak' => 'required|string|max:16',
+                'nama_kelompok' => 'required|string|max:20',
+                'keterangan' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
-            $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->update([
-                'NamaPerusahaan' => $request->nama_perusahaan,
-                'Alamat' => $request->alamat,
-                'NomorKontak' => $request->nomor_kontak,
-                'LastUpdateDate' => now(),
-                'LastUpdateBy' => Auth::user()->id
+            $update = Kelompok::lockForUpdate()->where('IDKelompok', $id)->update([
+                'NamaKelompok' => $request->nama_kelompok,
+                'Keterangan' => $request->keterangan
             ]);
 
-            if ($donatur) {
-
+            if ($update) {
                 DB::commit();
-                return ApiResponse::success();
+                return ApiResponse::success(Kelompok::where('IDKelompok', $id)->first());
             }
 
             DB::rollback();
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
-            DB::rollback();
             return ApiResponse::badRequest($th->getMessage());
         }
     }

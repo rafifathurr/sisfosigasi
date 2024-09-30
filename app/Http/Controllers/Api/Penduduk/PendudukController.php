@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Penduduk;
+namespace App\Http\Controllers\Api\Penduduk;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
@@ -24,12 +24,7 @@ class PendudukController extends Controller
 
             $penduduk = Penduduk::all();
 
-            if ($penduduk->isNotEmpty()) {
-
-                return ApiResponse::success($penduduk);
-            }
-
-            return ApiResponse::notFound();
+            return ApiResponse::success($penduduk);
         } catch (\Throwable $th) {
 
             return ApiResponse::badRequest($th->getMessage());
@@ -145,7 +140,7 @@ class PendudukController extends Controller
             if ($store) {
 
                 DB::commit();
-                return ApiResponse::success();
+                return ApiResponse::success(Penduduk::where('IDPenduduk', $id)->first());
             }
 
             DB::rollback();

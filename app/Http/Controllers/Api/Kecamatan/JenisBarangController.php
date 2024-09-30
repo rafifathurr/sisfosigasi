@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Kecamatan;
+namespace App\Http\Controllers\Api\Kecamatan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
@@ -24,10 +24,7 @@ class JenisBarangController extends Controller
 
             $jenis_barang = JenisBarang::all();
 
-            if (!is_null($jenis_barang)) {
-
-                return ApiResponse::success($jenis_barang);
-            }
+            return ApiResponse::success($jenis_barang);
 
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
@@ -117,7 +114,7 @@ class JenisBarangController extends Controller
             if ($update_jenis_barang == 1) {
 
                 DB::commit();
-                return ApiResponse::success();
+                return ApiResponse::success(JenisBarang::where('IDJenisBarang', $id)->first());
             }
 
             DB::rollback();
