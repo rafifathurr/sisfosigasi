@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Kecamatan;
+namespace App\Http\Controllers\Api\Kecamatan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
@@ -24,13 +24,7 @@ class BarangController extends Controller
 
             $barang = Barang::all();
 
-            if (!is_null($barang)) {
-
-                return ApiResponse::success($barang);
-            } else {
-
-                return ApiResponse::notFound();
-            }
+            return ApiResponse::success($barang);
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
@@ -121,7 +115,7 @@ class BarangController extends Controller
             if ($update_barang == 1) {
 
                 DB::commit();
-                return ApiResponse::success();
+                return ApiResponse::success(Barang::where('IDBarang', $id)->first());
             }
 
             DB::rollBack();

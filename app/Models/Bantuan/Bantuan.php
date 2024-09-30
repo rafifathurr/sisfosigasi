@@ -16,11 +16,11 @@ class Bantuan extends Model
 
     public function donatur()
     {
-        $this->belongsTo(Donatur::class, 'IDDonatur', 'IDDonatur');
+        return $this->belongsTo(Donatur::class, 'IDDonatur', 'IDDonatur');
     }
 
-    public function BantuanDetail()
+    public function bantuanDetail()
     {
-        $this->hasMany(Bantuan_Dtl::class, 'IDBantuan', 'IDBantuan');
+        return $this->hasMany(Bantuan_Dtl::class, 'IDBantuan', 'IDBantuan');
     }
 }

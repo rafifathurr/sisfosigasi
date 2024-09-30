@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Kebutuhan;
+namespace App\Http\Controllers\Api\Kebutuhan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
@@ -64,7 +64,7 @@ class KebutuhanController extends Controller
             }
 
             DB::beginTransaction();
-            foreach ($request->product as $product){
+            foreach ($request->product as $product) {
                 $kebutuhan = Kebutuhan::lockForUpdate()->create([
                     'IDBarang' => $product['idProduct'],
                     'IDPosko' => $request->idPosko,
@@ -114,5 +114,4 @@ public function qtyReceived(Request $request, $id) // untuk mengisi jumlah yang 
             return ApiResponse::badRequest($e);
         }
     }
-
 }

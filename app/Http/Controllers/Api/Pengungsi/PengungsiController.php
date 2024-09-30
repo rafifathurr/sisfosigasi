@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Pengungsi;
+namespace App\Http\Controllers\Api\Pengungsi;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;

@@ -2,15 +2,15 @@
 
 use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
-use App\Http\Controllers\Bantuan\BantuanController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Donatur\DonaturController;
-use App\Http\Controllers\Kebutuhan\KebutuhanController;
-use App\Http\Controllers\Kecamatan\BarangController;
-use App\Http\Controllers\Kecamatan\JenisBarangController;
-use App\Http\Controllers\Kelompok\KelompokController;
-use App\Http\Controllers\Penduduk\PendudukController;
-use App\Http\Controllers\Pengungsi\PengungsiController;
+use App\Http\Controllers\Api\Donatur\DonaturController;
+use App\Http\Controllers\Api\Kebutuhan\KebutuhanController;
+use App\Http\Controllers\Api\Kecamatan\BarangController;
+use App\Http\Controllers\Api\Kecamatan\JenisBarangController;
+use App\Http\Controllers\Api\Kelompok\KelompokController;
+use App\Http\Controllers\Api\Penduduk\PendudukController;
+use App\Http\Controllers\Api\Pengungsi\PengungsiController;
+use App\Http\Controllers\Api\Bantuan\BantuanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
