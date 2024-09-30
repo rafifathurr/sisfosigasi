@@ -116,12 +116,15 @@ class JenisBarangController extends Controller
 
             if ($update_jenis_barang == 1) {
 
+                DB::commit();
                 return ApiResponse::success();
             }
 
+            DB::rollback();
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
 
+            DB::rollback();
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
