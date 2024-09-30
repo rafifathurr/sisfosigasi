@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Helpers\ApiResponse;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class Authenticate extends Middleware
 
         if (!$request->expectsJson()) {
             if ($request->is('api/*')) {
-                return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+                return ApiResponse::unauthorized();
             }
 
             return route('login');

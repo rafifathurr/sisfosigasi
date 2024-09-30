@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Bantuan extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'IDBantuan';
     protected $table = 'bantuan';
     protected $guarded = [];
     public $timestamps = false;

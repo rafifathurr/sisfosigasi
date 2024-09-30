@@ -16,7 +16,7 @@ class BantuanController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:kecematan');
+        $this->middleware('role:kecamatan');
     }
     /**
      * Display a listing of the resource.
@@ -91,8 +91,8 @@ class BantuanController extends Controller
 
                     $bantuan_detail = Bantuan_Dtl::lockForUpdate()->insert([
                         'IDBantuan' => $bantuan->IDBantuan,
-                        'IDBarang' => $item->id_barang,
-                        'Jumlah' => $item->jumlah_barang,
+                        'IDBarang' => $item['id_barang'],
+                        'Jumlah' => $item['jumlah_barang'],
                     ]);
                 }
 
@@ -127,8 +127,7 @@ class BantuanController extends Controller
                 'donatur'
             ])
                 ->where('IDBantuan', $id)
-                ->orderBy('IDBantuan', 'desc')
-                ->get();
+                ->first();
 
             if (!is_null($bantuan)) {
 

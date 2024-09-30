@@ -15,7 +15,7 @@ class DonaturController extends Controller
 
     public function __construct()
     {
-        $this->middleware('role:kecematan');
+        $this->middleware('role:bansos');
     }
     /**
      * Display a listing of the resource.
@@ -89,7 +89,7 @@ class DonaturController extends Controller
 
             $donatur = Donatur::where('IDDonatur', $id)->first();
 
-            if ($donatur->isNotEmpty()) {
+            if (!is_null($donatur)) {
 
                 return ApiResponse::success($donatur);
             }
@@ -120,7 +120,7 @@ class DonaturController extends Controller
                 return response()->json($validator->errors(), 422);
             }
 
-            $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->create([
+            $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->update([
                 'NamaPerusahaan' => $request->nama_perusahaan,
                 'Alamat' => $request->alamat,
                 'NomorKontak' => $request->nomor_kontak,

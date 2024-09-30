@@ -10,6 +10,7 @@ class Donatur extends Model
     use HasFactory;
 
     protected $table = 'donatur';
+    protected $primaryKey = 'IDDonatur';
     protected $guarded = [];
     public $timestamps = false;
 }
