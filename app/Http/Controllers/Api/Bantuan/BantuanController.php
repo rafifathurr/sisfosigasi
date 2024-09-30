@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Bantuan;
+namespace App\Http\Controllers\Api\Bantuan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Validator;
 
 class BantuanController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('role:kecamatan');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('role:kecamatan');
+    // }
     /**
      * Display a listing of the resource.
      */
@@ -26,17 +26,13 @@ class BantuanController extends Controller
         try {
 
             $bantuan = Bantuan::with([
-                'donatur'
+                'donatur',
+                'bantuanDetail.barang'
             ])
                 ->orderBy('IDBantuan', 'desc')
                 ->get();
 
-            if (!is_null($bantuan)) {
-
-                return ApiResponse::success($bantuan);
-            }
-
-            return ApiResponse::notFound();
+            return ApiResponse::success($bantuan);
         } catch (\Throwable $th) {
 
             return ApiResponse::badRequest($th->getMessage());
@@ -124,7 +120,8 @@ class BantuanController extends Controller
         try {
 
             $bantuan = Bantuan::with([
-                'donatur'
+                'donatur',
+                'bantuanDetail.barang'
             ])
                 ->where('IDBantuan', $id)
                 ->first();
@@ -167,7 +164,7 @@ class BantuanController extends Controller
 
             if ($bantuan) {
 
-                $old_bantuan_detail = Bantuan_Dtl::where('IDBantuan', $id)->get()->pluck('IDBarang');
+                $old_bantuan_detail = Bantuan_Dtl::where('IDBantuan', $id)->get()->pluck('IDBarang')->toArray();
                 $new_bantuan_detail = collect($request->barang)->pluck('id_barang')->toArray();
 
                 $to_insert = array_diff($new_bantuan_detail, $old_bantuan_detail);
@@ -183,7 +180,7 @@ class BantuanController extends Controller
                 foreach ($request->barang as $item) {
                     if (in_array($item['id_barang'], $to_insert)) {
                         Bantuan_Dtl::lockForUpdate()->insert([
-                            'IDBantuan' => $bantuan->IDBantuan,
+                            'IDBantuan' => $id,
                             'IDBarang' => $item['id_barang'],
                             'Jumlah' => $item['jumlah_barang'],
                         ]);
@@ -201,7 +198,12 @@ class BantuanController extends Controller
                 }
 
                 DB::commit();
-                return ApiResponse::success($bantuan);
+                return ApiResponse::success(
+                    Bantuan::with([
+                        'donatur',
+                        'bantuanDetail.barang'
+                    ])->where('IDBantuan', $id)->first()
+                );
             }
 
             DB::rollback();
@@ -209,7 +211,11 @@ class BantuanController extends Controller
         } catch (\Throwable $th) {
 
             DB::rollback();
-            return ApiResponse::badRequest($th->getMessage());
+            return ApiResponse::badRequest([
+                'file' => $th->getFile(),
+                'message' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ]);
         }
     }
 
