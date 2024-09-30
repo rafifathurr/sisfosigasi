@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\UserManagement;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\User;
 use App\Models\UserManagement\Role;
 use Carbon\Carbon;
@@ -105,17 +106,14 @@ class UserManagementController extends Controller
              */
             if ($user && $model_has_role) {
                 DB::commit();
-                return redirect()->route('user-management.index')->with('success', 'User Berhasil Disimpan');
+                return ApiResponse::success($user);
             } else {
                 DB::rollBack();
-                return redirect()
-                    ->back()
-                    ->with(['failed' => 'User Gagal Disimpan']);
+                return ApiResponse::badRequest('user gagal disimpan');
+
             }
         } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with(['failed' => $e->getMessage()]);
+            return ApiResponse::badRequest($e->getMessage());
         }
     }
 

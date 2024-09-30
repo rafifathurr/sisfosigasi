@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kebutuhan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Barang\Barang;
 use App\Models\Kebutuhan\Kebutuhan;
 use App\Models\Posko\Posko;
@@ -29,17 +30,15 @@ class KebutuhanController extends Controller
     }
     public function index()
     {
-        $posko = Posko::whereHas('kebutuhan', function($query) {
-            $query->whereNotNull('IDPosko');
-        })->get();
-        return response()->json($posko, 200); // Mengembalikan response JSON dengan status 200
+        $kebutuhan = Kebutuhan::with(['posko.user','barang'])->get();
+        return ApiResponse::success($kebutuhan);
 
     }
 
     public function show($id)  // id yang digunakan idposko
     {
-        $pengungsi = Posko::where('IDPosko', $id)->with(['pengguna', 'kebutuhan'])->first();
-        return response()->json($pengungsi, 200); // Mengembalikan response JSON dengan status 200
+        $kebutuhan = Kebutuhan::with(['posko.user','barang'])->Where('IDKebutuhan', $id)->first();
+        return ApiResponse::success($kebutuhan);
     }
 
     public function create()
@@ -49,7 +48,7 @@ class KebutuhanController extends Controller
         $posko = Posko::with('pengguna')->whereNotIn('IDPosko', $kebutuhan)->get();
         $data['product'] = $product;
         $data['posko'] = $posko;
-        return response()->json($data, 200); // Mengembalikan response JSON dengan status 200
+        return ApiResponse::success($data);
 
     }
 
@@ -57,11 +56,11 @@ class KebutuhanController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idPosko' => 'string|max:255', // Validasi problem
+                'idPosko' => 'numeric', // Validasi problem
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422); // Gunakan status 422 untuk validasi gagal
+                return ApiResponse::badRequest($validator->errors());
             }
 
             DB::beginTransaction();
@@ -76,22 +75,21 @@ class KebutuhanController extends Controller
             }
             if ($kebutuhan) {
                 DB::commit();
-                return response()->json('data berhasil disimpan', 200); // Mengembalikan response JSON dengan status 201
+                return ApiResponse::created($kebutuhan);
             } else {
                 DB::rollBack();
-                return response()->json(['error' => 'Data posko tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+                return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
             }
         } catch (Exception $e) {
-            return response()->json(['error' => 'Data tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
-            return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
+            return ApiResponse::badRequest($e);
         }
     }
 
-    public function qtyReceived(Request $request) // untuk mengisi jumlah yang diterima
+public function qtyReceived(Request $request, $id) // untuk mengisi jumlah yang diterima
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idPosko' => 'string|max:255', // Validasi problem
+                'qty' => 'numeric', // Validasi problem
             ]);
 
             if ($validator->fails()) {
@@ -99,24 +97,21 @@ class KebutuhanController extends Controller
             }
 
             DB::beginTransaction();
-            foreach ($request->product as $product){
-                $kebutuhan = Kebutuhan::where('IDPosko', $request->idPosko)->where('IDBarang', $product['idProduct'])->lockForUpdate()->update([
-                    'JumlahDiterima' => $product['qty'],
-                    'LastUpdateDate' => Carbon::now(),
-                    'LastUpdateBy' => Auth::user()->id,
-                ]);
-            }
+            $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->lockForUpdate()->update([
+                'JumlahDiterima' => $request->qty,
+                'LastUpdateDate' => Carbon::now(),
+                'LastUpdateBy' => Auth::user()->id,
+            ]);
             if ($kebutuhan) {
                 DB::commit();
-                return response()->json('data berhasil disimpan', 200); // Mengembalikan response JSON dengan status 201
+                $data_kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->first();
+                return ApiResponse::success($data_kebutuhan);
             } else {
                 DB::rollBack();
-                return response()->json(['error' => 'Data posko tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+                return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
             }
         } catch (Exception $e) {
-            dd($e);
-            return response()->json(['error' => 'Data tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
-            return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
+            return ApiResponse::badRequest($e);
         }
     }
 
