@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Pengungsi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Penduduk\Penduduk;
 use App\Models\Pengungsi\Pengungsi;
 use App\Models\Posko\Posko;
@@ -30,15 +31,13 @@ class PengungsiController extends Controller
     public function index()
     {
         $pengungsi = Pengungsi::with(['penduduk', 'posko'])->get();
-        return response()->json($pengungsi, 200); // Mengembalikan response JSON dengan status 201
-
+        return ApiResponse::success($pengungsi);
     }
 
     public function show($id)
     {
         $pengungsi = Pengungsi::where('IDPengungsi', $id)->with(['penduduk', 'posko'])->first();
-        return response()->json($pengungsi, 200); // Mengembalikan response JSON dengan status 200
-
+        return ApiResponse::success($pengungsi);
     }
 
     public function create(Request $request)
@@ -47,19 +46,20 @@ class PengungsiController extends Controller
         $posko = Posko::with('pengguna')->get();
         $data['penduduk'] = $penduduk;
         $data['posko'] = $posko;
-        return response()->json($data, 200); // Mengembalikan response JSON dengan status 200
+        return ApiResponse::success($data);
     }
 
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idPosko' => 'required|numeric|max:50', // Validasi nomor kontak
+                'idPosko' => 'required|numeric', // Validasi nomor kontak
+                'idPenduduk' => 'required|numeric', // Validasi nomor kontak
                 'condition' => 'string|max:255', // Validasi problem
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422); // Gunakan status 422 untuk validasi gagal
+                return ApiResponse::badRequest($validator->errors());
             }
 
             DB::beginTransaction();
@@ -72,15 +72,13 @@ class PengungsiController extends Controller
             ]);
             if ($pengungsi) {
                 DB::commit();
-                return response()->json('data berhasil disimpan', 200); // Mengembalikan response JSON dengan status 201
+                return ApiResponse::created($pengungsi);
             } else {
                 DB::rollBack();
-                return response()->json(['error' => 'Data posko tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+                return ApiResponse::badRequest('Data pengungsi tidak dapat disimpan.');
             }
         } catch (Exception $e) {
-            return response()->json(['error' => 'Data tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
-            return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
-
+            return ApiResponse::badRequest($e);
         }
     }
 
@@ -92,21 +90,25 @@ class PengungsiController extends Controller
         $data['penduduk'] = $penduduk;
         $data['posko'] = $posko;
         $data['pengungsi'] = $pengungsi;
-        return response()->json($data, 200); // Mengembalikan response JSON dengan status 200
-
+        return ApiResponse::success($data);
     }
 
     public function update(Request $request, $id)
     {
         try {
+
+            if (!$id) {
+                return ApiResponse::badRequest('error id missing');
+            }
             $validator = Validator::make($request->all(), [
-                'idPosko' => 'required|numeric|max:50', // Validasi nomor kontak
+                'idPosko' => 'required|numeric', // Validasi nomor kontak
+                'idPenduduk' => 'required|numeric', // Validasi nomor kontak
                 'condition' => 'string|max:255', // Validasi problem
             ]);
 
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422); // Gunakan status 422 untuk validasi gagal
+                return ApiResponse::badRequest($validator->errors());
             }
 
             DB::beginTransaction();
@@ -119,15 +121,14 @@ class PengungsiController extends Controller
             ]);
             if ($pengungsi) {
                 DB::commit();
-                return response()->json('data berhasil disimpan', 200); // Mengembalikan response JSON dengan status 201
+                $data_pengungsi = Pengungsi::where('IDPengungsi', $id)->first();
+                return ApiResponse::success($data_pengungsi);
             } else {
                 DB::rollBack();
-                return response()->json(['error' => 'Data posko tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
+                return ApiResponse::badRequest('pengungsi tidak ditemukan');
             }
         } catch (Exception $e) {
-            return response()->json(['error' => 'Data tidak dapat disimpan.'], 500); // Mengembalikan error jika terjadi pengecualian
-            return response()->json(['error' => $e], 500); // Mengembalikan error jika terjadi pengecualian
-
+            return ApiResponse::badRequest($e);
         }
     }
 }

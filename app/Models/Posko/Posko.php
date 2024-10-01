@@ -4,6 +4,7 @@ namespace App\Models\Posko;
 
 use App\Models\Kebutuhan\Kebutuhan;
 use App\Models\Pengguna\Pengguna;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,9 +15,9 @@ class Posko extends Model
     protected $guarded = [];
     public $timestamps = false;
 
-    public function pengguna()
+    public function user()
     {
-        return $this->hasOne(Pengguna::class,'IDPengguna','Ketua');
+        return $this->hasOne(User::class,'id','Ketua');
     }
 
     public function kebutuhan()
