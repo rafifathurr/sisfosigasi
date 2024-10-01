@@ -22,7 +22,7 @@ class BarangController extends Controller
 
         try {
 
-            $barang = Barang::all();
+            $barang = Barang::paginate(10);
 
             return ApiResponse::success($barang);
         } catch (\Throwable $th) {

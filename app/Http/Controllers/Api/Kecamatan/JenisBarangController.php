@@ -22,7 +22,7 @@ class JenisBarangController extends Controller
     {
         try {
 
-            $jenis_barang = JenisBarang::all();
+            $jenis_barang = JenisBarang::paginate(10);
 
             return ApiResponse::success($jenis_barang);
 

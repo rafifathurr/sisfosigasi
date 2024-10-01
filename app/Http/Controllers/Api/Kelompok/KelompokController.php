@@ -22,7 +22,7 @@ class KelompokController extends Controller
     {
         try {
 
-            $kelompok = Kelompok::all();
+            $kelompok = Kelompok::paginate(10);
 
             return ApiResponse::success($kelompok);
         } catch (\Throwable $th) {

@@ -22,7 +22,7 @@ class PendudukController extends Controller
     {
         try {
 
-            $penduduk = Penduduk::all();
+            $penduduk = Penduduk::paginate(10);
 
             return ApiResponse::success($penduduk);
         } catch (\Throwable $th) {
