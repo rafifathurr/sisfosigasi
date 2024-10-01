@@ -30,7 +30,7 @@ class PengungsiController extends Controller
     }
     public function index()
     {
-        $pengungsi = Pengungsi::with(['penduduk', 'posko'])->get();
+        $pengungsi = Pengungsi::with(['penduduk', 'posko'])->paginate(10);
         return ApiResponse::success($pengungsi);
     }
 

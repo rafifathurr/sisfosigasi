@@ -30,7 +30,7 @@ class KebutuhanController extends Controller
     }
     public function index()
     {
-        $kebutuhan = Kebutuhan::with(['posko.user','barang'])->get();
+        $kebutuhan = Kebutuhan::with(['posko.user','barang'])->paginate(10);
         return ApiResponse::success($kebutuhan);
 
     }
