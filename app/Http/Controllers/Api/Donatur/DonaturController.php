@@ -24,7 +24,7 @@ class DonaturController extends Controller
     {
         try {
 
-            $donatur = Donatur::all();
+            $donatur = Donatur::paginate(10);
 
             return ApiResponse::success($donatur);
         } catch (\Throwable $th) {

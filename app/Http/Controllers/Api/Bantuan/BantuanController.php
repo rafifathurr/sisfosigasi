@@ -30,7 +30,7 @@ class BantuanController extends Controller
                 'bantuanDetail.barang'
             ])
                 ->orderBy('IDBantuan', 'desc')
-                ->get();
+                ->paginate(10);
 
             return ApiResponse::success($bantuan);
         } catch (\Throwable $th) {
