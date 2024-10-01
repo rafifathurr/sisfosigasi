@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Kelompok\KelompokController;
 use App\Http\Controllers\Api\Penduduk\PendudukController;
 use App\Http\Controllers\Api\Pengungsi\PengungsiController;
 use App\Http\Controllers\Api\Bantuan\BantuanController;
+use App\Http\Controllers\Api\UserManagement\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,17 @@ Route::post('refresh', [\App\Http\Controllers\Api\AuthController::class, 'refres
 Route::middleware('auth:api')->group(function () {
     Route::post('user', function (Request $request) {
         return $request->user();
+    });
+
+    Route::controller(UserManagementController::class)
+    ->prefix('user-management')
+    ->group(function () {
+        Route::get('index', 'index');
+        Route::get('show/{id}', 'show');
+        Route::post('store', 'store');
+        Route::get('create', 'create');
+        Route::get('edit/{id}', 'edit');
+        Route::put('update/{id}', 'update');
     });
 
     Route::controller(PoskoController::class)

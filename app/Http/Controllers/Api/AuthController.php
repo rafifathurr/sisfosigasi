@@ -12,10 +12,22 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['authenticate', 'register']]);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:api', ['except' => ['authenticate', 'register']]);
+    // }
+    // public function __construct()
+    // {
+    //     /**
+    //      * Super Admin Access
+    //      */
+    //     $this->middleware('role:posko-utama', ['except' => ['index', 'show']]);
+
+    //     /**
+    //      * Super Admin and Pemerintah Access
+    //      */
+    //     $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
+    // }
 
     public function authenticate(Request $request)
     {
