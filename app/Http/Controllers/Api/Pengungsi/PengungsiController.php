@@ -9,6 +9,7 @@ use App\Models\Pengungsi\Pengungsi;
 use App\Models\Posko\Posko;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -63,7 +64,7 @@ class PengungsiController extends Controller
             }
 
             $posko = Posko::where('IDPosko', $request->idPosko)->first();
-            $user = Posko::where('IDPosko', $request->idPenduduk)->first();
+            $user = User::where('id', $request->idPenduduk)->first();
             if (!$posko){
                 return ApiResponse::badRequest('posko tidak ditemkan');
             }
@@ -75,7 +76,7 @@ class PengungsiController extends Controller
 
             DB::beginTransaction();
             $pengungsi = Pengungsi::lockForUpdate()->create([
-                'IDPenduduk' => $request->idPenduduk,
+                'IDPenduduk' => $request->idPenduduk, // ini adalah id user
                 'IDPosko' => $request->idPosko,
                 'KondisiKhusus' => $request->condition,
                 'LastUpdateDate' => Carbon::now(),
