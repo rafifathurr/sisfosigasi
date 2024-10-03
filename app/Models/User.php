@@ -38,6 +38,8 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    protected function getDefaultGuardName(): string { return 'web'; }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

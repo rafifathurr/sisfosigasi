@@ -35,15 +35,7 @@ class UserManagementController extends Controller
 
     public function __construct()
     {
-        /**
-         * Super Admin Access
-         */
-        $this->middleware('role:posko-utama|posko', ['except' => ['index', 'show']]);
-
-        /**
-         * Super Admin and Pemerintah Access
-         */
-        $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
+        $this->middleware('role:posko-utama|posko');
     }
 
     public function index()
