@@ -45,7 +45,7 @@ class KebutuhanController extends Controller
     {
         $kebutuhan = Kebutuhan::groupBy('IDPosko')->pluck('IDPosko');
         $product = Barang::get();
-        $posko = Posko::with('pengguna')->whereNotIn('IDPosko', $kebutuhan)->get();
+        $posko = Posko::with('user')->whereNotIn('IDPosko', $kebutuhan)->get();
         $data['product'] = $product;
         $data['posko'] = $posko;
         return ApiResponse::success($data);

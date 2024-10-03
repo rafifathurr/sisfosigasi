@@ -114,7 +114,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            $model_has_role = $user->assignRole('donatur');
+            $model_has_role = $user->assignRole('posko');
 
             /**
              * Validation Submit

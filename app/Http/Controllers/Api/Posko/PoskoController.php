@@ -29,7 +29,7 @@ class PoskoController extends Controller
     }
     public function index()
     {
-        $posko = Posko::with('pengguna')->paginate(10);
+        $posko = Posko::with('user')->paginate(10);
         return ApiResponse::success($posko);
     }
 
@@ -82,8 +82,8 @@ class PoskoController extends Controller
 
     public function edit($id)
     {
-        $posko = Posko::where('IDPosko', $id)->with('pengguna')->first();
-        $pengguna = Pengguna::whereNull('IdPosko')->get();
+        $posko = Posko::where('IDPosko', $id)->with('user')->first();
+        $pengguna = user::get();
         $data['posko'] = $posko;
         $data['pengguna'] = $pengguna;
         return ApiResponse::success($data);

@@ -43,7 +43,7 @@ class PengungsiController extends Controller
     public function create(Request $request)
     {
         $penduduk = Penduduk::get();
-        $posko = Posko::with('pengguna')->get();
+        $posko = Posko::with('user')->get();
         $data['penduduk'] = $penduduk;
         $data['posko'] = $posko;
         return ApiResponse::success($data);
@@ -86,7 +86,7 @@ class PengungsiController extends Controller
     {
         $pengungsi = Pengungsi::where('IDPengungsi', $id)->with(['penduduk', 'posko'])->first();
         $penduduk = Penduduk::get();
-        $posko = Posko::with('pengguna')->get();
+        $posko = Posko::with('user')->get();
         $data['penduduk'] = $penduduk;
         $data['posko'] = $posko;
         $data['pengungsi'] = $pengungsi;
