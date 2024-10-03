@@ -122,6 +122,18 @@ class PengungsiController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::badRequest($validator->errors());
             }
+            
+            $posko = Posko::where('IDPosko', $request->idPosko)->first();
+            $user = User::where('id', $request->idPenduduk)->first();
+
+            if (!$posko){
+                return ApiResponse::badRequest('posko tidak ditemkan');
+            }
+
+            if (!$user){
+                return ApiResponse::badRequest('user tidak ditemkan');
+            }
+
 
             DB::beginTransaction();
             $pengungsi = Pengungsi::where('IDPengungsi', $id)->lockForUpdate()->update([
