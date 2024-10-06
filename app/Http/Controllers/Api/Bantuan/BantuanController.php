@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Validator;
 
 class BantuanController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('role:kecamatan');
-    // }
+    public function __construct()
+    {
+        $this->middleware('role:kecamatan');
+    }
     /**
      * Display a listing of the resource.
      */
