@@ -69,7 +69,7 @@ class PendudukController extends Controller
             if ($store) {
 
                 DB::commit();
-                return ApiResponse::created();
+                return ApiResponse::created($store);
             }
 
             DB::rollback();
