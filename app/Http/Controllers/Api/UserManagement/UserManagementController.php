@@ -9,29 +9,11 @@ use App\Models\UserManagement\Role;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Yajra\DataTables\Facades\DataTables;
 
 class UserManagementController extends Controller
 {
-    // public function __construct()
-    // {
-    //     /**
-    //      * Super Admin Access
-    //      */
-    //     $this->middleware('role:super-admin', ['except' => [
-    //         'index', 'show', 'dataTable'
-    //     ]]);
-
-    //     /**
-    //      * Super Admin and Pemerintah Access
-    //      */
-    //     $this->middleware('role:super-admin|pemerintah', ['except' => [
-    //         'create', 'store', 'edit', 'update', 'destroy'
-    //     ]]);
-    // }
 
     public function __construct()
     {
@@ -40,15 +22,8 @@ class UserManagementController extends Controller
 
     public function index()
     {
-        $user = User::with('roles')->whereNull('deleted_at')->get();
+        $user = User::with('roles')->whereNull('deleted_at')->paginate(10);
         return ApiResponse::success($user);
-    }
-
-    public function create()
-    {
-        $roles = Role::get();
-        return ApiResponse::success($roles);
-
     }
 
     public function store(Request $request)
@@ -93,35 +68,6 @@ class UserManagementController extends Controller
         }
     }
 
-    public function destory(Request $request)
-    {
-        try {
-            DB::beginTransaction();
-            $user = User::where('id', $request->id)->update([
-                'deleted_at' => Carbon::now(),
-            ]);
-
-            /**
-             * Validation Submit
-             */
-            if ($user) {
-                DB::commit();
-                return response()->json([
-                    'success' => true,
-                ]);
-            } else {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User Gagal Dihapus',
-                ]);
-            }
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with(['failed' => $e->getMessage()]);
-        }
-    }
     public function show($id)
     {
         try {
@@ -147,39 +93,6 @@ class UserManagementController extends Controller
             }
         } catch (Exception $e) {
             return ApiResponse::badRequest($e->getMessage());
-        }
-    }
-    public function edit($id)
-    {
-        try {
-            /**
-             * Get User Record from id
-             */
-            $user = User::with(['roles'])->find($id);
-            $roles = Role::get();
-
-            /**
-             * Validation User id
-             */
-            if (!is_null($user)) {
-                $data['user'] = $user;
-
-                /**
-                 * User Role Configuration
-                 */
-                $data['user_role'] = $user->roles->first()->id;
-                $data['roles'] = $roles;
-
-                return view('user_management.edit', $data);
-            } else {
-                return redirect()
-                    ->back()
-                    ->with(['failed' => 'Data Tidak Ditemukan']);
-            }
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with(['failed' => $e->getMessage()]);
         }
     }
 
@@ -229,10 +142,6 @@ class UserManagementController extends Controller
             }
         } catch (Exception $e) {
             return ApiResponse::success($e->getMessage());
-
-            return redirect()
-                ->back()
-                ->with(['failed' => $e->getMessage()]);
         }
     }
 }

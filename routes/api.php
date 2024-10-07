@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Pengguna\PenggunaController;
 use App\Http\Controllers\Api\Posko\PoskoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Api\Donatur\DonaturController;
@@ -57,8 +56,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('index', 'index');
         Route::get('show/{id}', 'show');
         Route::post('store', 'store');
-        Route::get('create', 'create');
-        Route::get('edit/{id}', 'edit');
         Route::put('update/{id}', 'update');
     });
 
@@ -68,17 +65,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('index', 'index');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
-            Route::get('create', 'create');
-            Route::get('edit/{id}', 'edit');
             Route::put('update/{id}', 'update');
-        });
-
-    Route::controller(PenggunaController::class)
-        ->prefix('pengguna')
-        ->group(function () {
-            Route::get('index', 'index');
-            Route::get('show', 'show');
-            Route::post('store', 'store');
         });
 
     Route::controller(PengungsiController::class)
@@ -87,8 +74,6 @@ Route::middleware('auth:api')->group(function () {
             Route::get('index', 'index');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
-            Route::get('create', 'create');
-            Route::get('edit/{id}', 'edit');
             Route::put('update/{id}', 'update');
         });
 
@@ -98,8 +83,9 @@ Route::middleware('auth:api')->group(function () {
             Route::get('index', 'index');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
-            Route::get('create', 'create');
             Route::put('qtyReceived/{id}', 'qtyReceived');
+            Route::put('update/{id}', 'update');
+
         });
 
     Route::controller(BarangController::class)

@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Api\Posko;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
-use App\Models\Pengguna\Pengguna;
 use App\Models\Posko\Posko;
 use Exception;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,13 +33,11 @@ class PoskoController extends Controller
     public function show($id)
     {
         $posko = Posko::where('IDPosko', $id)->with('user')->first();
-        return ApiResponse::success($posko);
-    }
+        if(!$posko){
+            return ApiResponse::badRequest('Data posko tidak ditemukan.');
+        }
 
-    public function create(Request $request)
-    {
-        $pengguna = User::get();
-        return ApiResponse::success($pengguna);
+        return ApiResponse::success($posko);
     }
 
     public function store(Request $request)
@@ -78,16 +73,6 @@ class PoskoController extends Controller
         } catch (Exception $e) {
             return ApiResponse::badRequest('Data tidak dapat disimpan.');
         }
-    }
-
-    public function edit($id)
-    {
-        $posko = Posko::where('IDPosko', $id)->with('user')->first();
-        $pengguna = user::get();
-        $data['posko'] = $posko;
-        $data['pengguna'] = $pengguna;
-        return ApiResponse::success($data);
-
     }
 
     public function update(Request $request, $id)
