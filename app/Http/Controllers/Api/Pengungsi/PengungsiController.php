@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Pengungsi;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
-use App\Models\Penduduk\Penduduk;
 use App\Models\Pengungsi\Pengungsi;
 use App\Models\Posko\Posko;
 use Carbon\Carbon;
@@ -19,35 +18,24 @@ class PengungsiController extends Controller
 {
     public function __construct()
     {
-        /**
-         * Super Admin Access
-         */
-        $this->middleware('role:posko-utama|posko', ['except' => ['index', 'show']]);
-
-        /**
-         * Super Admin and Pemerintah Access
-         */
-        $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
+        $this->middleware('role:posko-utama|posko');
     }
+
     public function index()
     {
         $pengungsi = Pengungsi::with(['penduduk', 'posko'])->paginate(10);
+
         return ApiResponse::success($pengungsi);
     }
 
     public function show($id)
     {
         $pengungsi = Pengungsi::where('IDPengungsi', $id)->with(['penduduk', 'posko'])->first();
-        return ApiResponse::success($pengungsi);
-    }
+        if(!$pengungsi){
+            return ApiResponse::badRequest('Data pengungsi tidak ditemukan.');
+        }
 
-    public function create(Request $request)
-    {
-        $penduduk = Penduduk::get();
-        $posko = Posko::with('user')->get();
-        $data['penduduk'] = $penduduk;
-        $data['posko'] = $posko;
-        return ApiResponse::success($data);
+        return ApiResponse::success($pengungsi);
     }
 
     public function store(Request $request)
@@ -92,17 +80,6 @@ class PengungsiController extends Controller
         } catch (Exception $e) {
             return ApiResponse::badRequest($e);
         }
-    }
-
-    public function edit($id)
-    {
-        $pengungsi = Pengungsi::where('IDPengungsi', $id)->with(['penduduk', 'posko'])->first();
-        $penduduk = Penduduk::get();
-        $posko = Posko::with('user')->get();
-        $data['penduduk'] = $penduduk;
-        $data['posko'] = $posko;
-        $data['pengungsi'] = $pengungsi;
-        return ApiResponse::success($data);
     }
 
     public function update(Request $request, $id)
