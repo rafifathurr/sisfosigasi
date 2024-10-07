@@ -57,7 +57,7 @@ class JenisBarangController extends Controller
             if ($store_jenis_barang) {
 
                 DB::commit();
-                return ApiResponse::created();
+                return ApiResponse::created($store_jenis_barang);
             }
 
             DB::rollback();
