@@ -13,4 +13,9 @@ class Barang extends Model
     protected $primaryKey = 'IDBarang';
     protected $guarded = [];
     public $timestamps = false;
+
+    public function jenisBarang()
+    {
+        return $this->belongsTo(JenisBarang::class, 'IDJenisBarang', 'IDJenisBarang');
+    }
 }

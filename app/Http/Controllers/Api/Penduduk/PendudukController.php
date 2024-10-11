@@ -22,7 +22,9 @@ class PendudukController extends Controller
     {
         try {
 
-            $penduduk = Penduduk::paginate(10);
+            $penduduk = Penduduk::with([
+                'kelompok'
+            ])->paginate(10);
 
             return ApiResponse::success($penduduk);
         } catch (\Throwable $th) {
