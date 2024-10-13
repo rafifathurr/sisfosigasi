@@ -23,14 +23,14 @@ class PengungsiController extends Controller
 
     public function index()
     {
-        $pengungsi = Pengungsi::with(['penduduk', 'posko'])->paginate(10);
+        $pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->paginate(10);
 
         return ApiResponse::success($pengungsi);
     }
 
     public function show($id)
     {
-        $pengungsi = Pengungsi::where('IDPengungsi', $id)->with(['penduduk', 'posko'])->first();
+        $pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->where('IDPengungsi', $id)->first();
         if(!$pengungsi){
             return ApiResponse::badRequest('Data pengungsi tidak ditemukan.');
         }
@@ -99,7 +99,7 @@ class PengungsiController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::badRequest($validator->errors());
             }
-            
+
             $posko = Posko::where('IDPosko', $request->idPosko)->first();
             $user = User::where('id', $request->idPenduduk)->first();
 
@@ -122,7 +122,7 @@ class PengungsiController extends Controller
             ]);
             if ($pengungsi) {
                 DB::commit();
-                $data_pengungsi = Pengungsi::where('IDPengungsi', $id)->first();
+                $data_pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->where('IDPengungsi', $id)->first();
                 return ApiResponse::success($data_pengungsi);
             } else {
                 DB::rollBack();
