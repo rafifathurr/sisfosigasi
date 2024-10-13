@@ -18,17 +18,11 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->char('phone', 13);
             $table->text('address')->nullable();
-            $table->string('province_slug')->nullable();
-            $table->string('city_slug')->nullable();
-            $table->integer('parent_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
-
-            // Foreign Key
-            $table->foreign('parent_id')->references('id')->on('users');
         });
     }
 
