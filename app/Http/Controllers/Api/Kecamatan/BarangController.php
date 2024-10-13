@@ -58,9 +58,7 @@ class BarangController extends Controller
 
             if ($barang) {
                 DB::commit();
-                return ApiResponse::created($barang->with([
-                    'jenisBarang'
-                ]));
+                return ApiResponse::created($barang);
             } else {
 
                 DB::rollback();
