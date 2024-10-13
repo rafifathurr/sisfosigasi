@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Posko\PoskoController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\Donatur\DonaturController;
 use App\Http\Controllers\Api\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Api\Kecamatan\BarangController;

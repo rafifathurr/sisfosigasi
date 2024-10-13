@@ -30,7 +30,6 @@ class BarangController extends Controller
         } catch (\Throwable $th) {
 
             return response()->json(['message' => $th->getMessage()], 500);
-            //throw $th;
         }
     }
 
@@ -58,9 +57,10 @@ class BarangController extends Controller
             ]);
 
             if ($barang) {
-
                 DB::commit();
-                return ApiResponse::created($barang);
+                return ApiResponse::created($barang->with([
+                    'jenisBarang'
+                ]));
             } else {
 
                 DB::rollback();
@@ -77,7 +77,9 @@ class BarangController extends Controller
     {
         try {
 
-            $barang = Barang::where('IDBarang', $id)->first();
+            $barang = Barang::with([
+                'jenisBarang'
+            ])->where('IDBarang', $id)->first();
 
             if (!is_null($barang)) {
 
@@ -117,7 +119,9 @@ class BarangController extends Controller
             if ($update_barang == 1) {
 
                 DB::commit();
-                return ApiResponse::success(Barang::where('IDBarang', $id)->first());
+                return ApiResponse::success(Barang::with([
+                    'jenisBarang'
+                ])->where('IDBarang', $id)->first());
             }
 
             DB::rollBack();
