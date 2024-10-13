@@ -12,22 +12,10 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:api', ['except' => ['authenticate', 'register']]);
-    // }
-    // public function __construct()
-    // {
-    //     /**
-    //      * Super Admin Access
-    //      */
-    //     $this->middleware('role:posko-utama', ['except' => ['index', 'show']]);
-
-    //     /**
-    //      * Super Admin and Pemerintah Access
-    //      */
-    //     $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['authenticate']]);
+    }
 
     public function authenticate(Request $request)
     {
@@ -90,63 +78,6 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
-    }
-
-
-    public function register(Request $request)
-    {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'phone' => 'required|max:255',
-                'username' => 'required|string|max:255|unique:users',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-            ]);
-
-            DB::beginTransaction();
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'username' => $request->username,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'password' => Hash::make($request->password),
-            ]);
-
-            $model_has_role = $user->assignRole('posko');
-
-            /**
-             * Validation Submit
-             */
-            if ($user && $model_has_role) {
-                DB::commit();
-                return response()->json(
-                    [
-                        'success' => true,
-                        'user' => $user
-                    ],
-                    200,
-                );
-            } else {
-                DB::rollBack();
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'User Gagal Disimpan',
-                    ],
-                    400,
-                );
-            }
-        } catch (Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                400,
-            );
-        }
     }
 
     public function logout(Request $request)
