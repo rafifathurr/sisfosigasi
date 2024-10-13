@@ -100,7 +100,7 @@ class PoskoController extends Controller
             ]);
             if ($posko) {
                 DB::commit();
-                $data_posko =  Posko::with(['user'])->whereNotwhere('IDPosko', $id)->first();
+                $data_posko =  Posko::with(['user'])->where('IDPosko', $id)->first();
                 return ApiResponse::success($data_posko);
             } else {
                 DB::rollBack();
