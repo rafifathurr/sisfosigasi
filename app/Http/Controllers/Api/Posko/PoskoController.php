@@ -26,13 +26,13 @@ class PoskoController extends Controller
     }
     public function index()
     {
-        $posko = Posko::with('user')->paginate(10);
+        $posko = Posko::with(['user'])->paginate(10);
         return ApiResponse::success($posko);
     }
 
     public function show($id)
     {
-        $posko = Posko::where('IDPosko', $id)->with('user')->first();
+        $posko = Posko::with(['user'])->where('IDPosko', $id)->first();
         if(!$posko){
             return ApiResponse::badRequest('Data posko tidak ditemukan.');
         }
@@ -99,8 +99,8 @@ class PoskoController extends Controller
 
             ]);
             if ($posko) {
-                $data_posko =  Posko::where('IDPosko', $id)->first();
                 DB::commit();
+                $data_posko =  Posko::with(['user'])->whereNotwhere('IDPosko', $id)->first();
                 return ApiResponse::success($data_posko);
             } else {
                 DB::rollBack();
