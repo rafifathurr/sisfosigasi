@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,49 +32,28 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => $validator->errors(),
-                    ],
-                    422
-                );
+                return ApiResponse::badRequest(null, $validator->errors());
             }
 
             $credentials = request([$field, 'password']);
 
             if (!($token = auth()->guard('api')->attempt($credentials))) {
-                return response()->json(
-                    [
-                        'success' => false,
-                        'message' => 'Email atau Password Anda salah',
-                    ],
-                    401,
-                );
+                return ApiResponse::unauthorized('Email atau Password Anda salah');
             }
 
-            return response()->json(
-                [
-                    'success' => true,
-                    'user' => auth()->guard('api')->user(),
-                    'token' => $token,
-                ],
-                200,
-            );
+            return ApiResponse::success([
+                'user' => auth()->guard('api')->user(),
+                'token' => $token,
+            ]);
+
         } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ],
-                400,
-            );
+            return ApiResponse::badRequest(null, $e->getMessage());
         }
     }
 
     public function refresh()
     {
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => auth()->refresh(),
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
@@ -83,9 +63,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         auth()->logout();
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout Berhasil!',
-        ]);
+        return ApiResponse::success(null, 'Logout Berhasil!');
     }
 }
