@@ -21,14 +21,14 @@ class KebutuhanController extends Controller
 
     public function index()
     {
-        $kebutuhan = Kebutuhan::with(['posko.user', 'barang'])->paginate(10);
+        $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->paginate(10);
         return ApiResponse::success($kebutuhan);
     }
 
     public function show($id)  // id yang digunakan idposko
     {
-        $kebutuhan = Kebutuhan::with(['posko.user', 'barang'])->Where('IDKebutuhan', $id)->first();
-        if(!$kebutuhan){
+        $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->first();
+        if (!$kebutuhan) {
             return ApiResponse::badRequest('Data kebutuhan tidak ditemukan.');
         }
         return ApiResponse::success($kebutuhan);
@@ -46,6 +46,7 @@ class KebutuhanController extends Controller
             }
 
             DB::beginTransaction();
+            $arr_kebutuhan = [];
             foreach ($request->product as $product) {
                 $kebutuhan = Kebutuhan::lockForUpdate()->create([
                     'IDBarang' => $product['idProduct'],
@@ -54,14 +55,17 @@ class KebutuhanController extends Controller
                     'LastUpdateDate' => Carbon::now(),
                     'LastUpdateBy' => Auth::user()->id,
                 ]);
+
+                if (!$kebutuhan) {
+                    DB::rollBack();
+                    return ApiResponse::badRequest('Data kebutuhan tidak dapat disimpan.');
+                }
+
+                array_push($arr_kebutuhan, $kebutuhan);
             }
-            if ($kebutuhan) {
-                DB::commit();
-                return ApiResponse::created($kebutuhan);
-            } else {
-                DB::rollBack();
-                return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
-            }
+
+            DB::commit();
+            return ApiResponse::created($arr_kebutuhan);
         } catch (Exception $e) {
             return ApiResponse::badRequest($e);
         }
@@ -84,13 +88,14 @@ class KebutuhanController extends Controller
                 'LastUpdateDate' => Carbon::now(),
                 'LastUpdateBy' => Auth::user()->id,
             ]);
+
             if ($kebutuhan) {
                 DB::commit();
-                $data_kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->first();
+                $data_kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->first();
                 return ApiResponse::success($data_kebutuhan);
             } else {
                 DB::rollBack();
-                return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
+                return ApiResponse::badRequest('Data kebutuhan tidak dapat disimpan.');
             }
         } catch (Exception $e) {
             return ApiResponse::badRequest($e);
@@ -110,25 +115,24 @@ class KebutuhanController extends Controller
 
             DB::beginTransaction();
 
-                $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->lockForUpdate()->update([
-                    'IDBarang' => $request->idProduct,
-                    'IDPosko' => $request->idPosko,
-                    'JumlahKebutuhan' => $request->qtyRequest,
-                    'JumlahDiterima' => $request->qtyReceived,
-                    'LastUpdateDate' => Carbon::now(),
-                    'LastUpdateBy' => Auth::user()->id,
-                ]);
+            $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->lockForUpdate()->update([
+                'IDBarang' => $request->idProduct,
+                'IDPosko' => $request->idPosko,
+                'JumlahKebutuhan' => $request->qtyRequest,
+                'JumlahDiterima' => $request->qtyReceived,
+                'LastUpdateDate' => Carbon::now(),
+                'LastUpdateBy' => Auth::user()->id,
+            ]);
             if ($kebutuhan) {
                 DB::commit();
-                $data_kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->with('barang','posko')->first();
+                $data_kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->with('barang', 'posko')->first();
                 return ApiResponse::created($data_kebutuhan);
             } else {
                 DB::rollBack();
-                return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
+                return ApiResponse::badRequest('Data kebutuhan tidak dapat disimpan.');
             }
         } catch (Exception $e) {
             return ApiResponse::badRequest($e);
         }
-
     }
 }
