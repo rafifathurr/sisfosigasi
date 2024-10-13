@@ -90,7 +90,9 @@ class PendudukController extends Controller
     {
         try {
 
-            $penduduk = Penduduk::where('IDPenduduk', $id)->first();
+            $penduduk = Penduduk::with([
+                'kelompok'
+            ])->where('IDPenduduk', $id)->first();
 
             if (!is_null($penduduk)) {
 
@@ -142,7 +144,9 @@ class PendudukController extends Controller
             if ($store) {
 
                 DB::commit();
-                return ApiResponse::success(Penduduk::where('IDPenduduk', $id)->first());
+                return ApiResponse::success(Penduduk::with([
+                    'kelompok'
+                ])->where('IDPenduduk', $id)->first());
             }
 
             DB::rollback();
