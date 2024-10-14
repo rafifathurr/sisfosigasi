@@ -26,51 +26,52 @@ class PoskoController extends Controller
     }
     public function index()
     {
-        $posko = Posko::with(['user'])->paginate(10);
+        $posko = Posko::with(['user'])->paginate(10); // untuk dapatkan semua data posko, dengan dibatasi 10 data
         return ApiResponse::success($posko);
     }
 
     public function show($id)
     {
+        // menampilkan data posko berdasarkan parameter id dengan relasi user
         $posko = Posko::with(['user'])->where('IDPosko', $id)->first();
-        if(!$posko){
+        if(!$posko){ // jika posko tidak ada, maka masuk kondisi error
             return ApiResponse::badRequest('Data posko tidak ditemukan.');
         }
-
-        return ApiResponse::success($posko);
+        
+        return ApiResponse::success($posko); // data dari posko
     }
 
     public function store(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'idUser' => 'required|numeric', // Validasi nama
-                'location' => 'required|max:50', // Validasi nomor kontak
-                'problem' => 'required', // Validasi problem
-                'solution' => 'required', // Validasi problem
+        try { 
+            $validator = Validator::make($request->all(), [ // validasi data 
+                'idUser' => 'required|numeric',
+                'location' => 'required|max:50',
+                'problem' => 'required',
+                'solution' => 'required', 
 
             ]);
 
-            if ($validator->fails()) {
+            if ($validator->fails()) { // jika ada parameter yang tidak sesuai maka muncul pesan error
                 return ApiResponse::badRequest($validator->errors());
             }
 
-            DB::beginTransaction();
-            $posko = Posko::lockForUpdate()->create([
+            DB::beginTransaction(); // memulai data transaksi
+            $posko = Posko::lockForUpdate()->create([ // membuat record baru
                 'Ketua' => $request->idUser,
                 'Lokasi' => $request->location,
                 'Masalah' => $request->problem,
                 'SolusiMasalah' => $request->solution,
 
             ]);
-            if ($posko) {
+            if ($posko) { // jika kondisi ada maka lakukan commit
                 DB::commit();
                 return ApiResponse::success($posko);
-            } else {
+            } else { // jika datanya tidak ada, maka lakukan error
                 DB::rollBack();
                 return ApiResponse::badRequest('Data posko tidak dapat disimpan.');
             }
-        } catch (Exception $e) {
+        } catch (Exception $e) { // jika query ada yang salah maka tampil disini
             return ApiResponse::badRequest('Data tidak dapat disimpan.');
         }
     }
@@ -79,10 +80,10 @@ class PoskoController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idUser' => 'required', // Validasi nama
-                'location' => 'required|max:50', // Validasi nomor kontak
-                'problem' => 'required', // Validasi problem
-                'solution' => 'required', // Validasi problem
+                'idUser' => 'required',
+                'location' => 'required|max:50',
+                'problem' => 'required', 
+                'solution' => 'required', 
 
             ]);
 
@@ -91,16 +92,16 @@ class PoskoController extends Controller
             }
 
             DB::beginTransaction();
-            $posko = Posko::where('IDPosko', $id)->lockForUpdate()->update([
+            $posko = Posko::where('IDPosko', $id)->lockForUpdate()->update([ // update data berdasarkan id posko
                 'Ketua' => $request->idUser,
                 'Lokasi' => $request->location,
                 'Masalah' => $request->problem,
                 'SolusiMasalah' => $request->solution,
 
             ]);
-            if ($posko) {
+            if ($posko) { // jika hasilnya true maka lakukan commit
                 DB::commit();
-                $data_posko =  Posko::with(['user'])->where('IDPosko', $id)->first();
+                $data_posko =  Posko::with(['user'])->where('IDPosko', $id)->first(); // amnil data kembali yang terbaru
                 return ApiResponse::success($data_posko);
             } else {
                 DB::rollBack();

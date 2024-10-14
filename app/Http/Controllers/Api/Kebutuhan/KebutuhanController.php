@@ -21,12 +21,14 @@ class KebutuhanController extends Controller
 
     public function index()
     {
+        // menampilkan data kebutuhan dengan dibatasi 10 record
         $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->paginate(10);
         return ApiResponse::success($kebutuhan);
     }
 
     public function show($id)  // id yang digunakan idposko
     {
+        // tampilan data berdasarkan id posko
         $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->first();
         if (!$kebutuhan) {
             return ApiResponse::badRequest('Data kebutuhan tidak ditemukan.');
@@ -37,16 +39,16 @@ class KebutuhanController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'idPosko' => 'numeric', // Validasi problem
+            $validator = Validator::make($request->all(), [// cek validasi sesuai parameter
+                'idPosko' => 'numeric',
             ]);
 
-            if ($validator->fails()) {
+            if ($validator->fails()) { // jika parameter ada yang tidak sesuai maka return error
                 return ApiResponse::badRequest($validator->errors());
             }
 
             DB::beginTransaction();
-            $arr_kebutuhan = [];
+            $arr_kebutuhan = [];// menampung data
             foreach ($request->product as $product) {
                 $kebutuhan = Kebutuhan::lockForUpdate()->create([
                     'IDBarang' => $product['idProduct'],
@@ -56,16 +58,16 @@ class KebutuhanController extends Controller
                     'LastUpdateBy' => Auth::user()->id,
                 ]);
 
-                if (!$kebutuhan) {
+                if (!$kebutuhan) { // jika kenutuhan ada error, maka batalkan update dan return error
                     DB::rollBack();
                     return ApiResponse::badRequest('Data kebutuhan tidak dapat disimpan.');
                 }
 
-                array_push($arr_kebutuhan, $kebutuhan);
+                array_push($arr_kebutuhan, $kebutuhan);// jika tidak error maka mengirimkan array
             }
 
             DB::commit();
-            return ApiResponse::created($arr_kebutuhan);
+            return ApiResponse::created($arr_kebutuhan);// memnuat record baru
         } catch (Exception $e) {
             return ApiResponse::badRequest($e);
         }
@@ -75,14 +77,15 @@ class KebutuhanController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'qty' => 'numeric', // Validasi problem
+                'qty' => 'numeric', 
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422); // Gunakan status 422 untuk validasi gagal
+                return ApiResponse::badRequest($validator->errors());
             }
 
             DB::beginTransaction();
+            // update mengiriman data
             $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->lockForUpdate()->update([
                 'JumlahDiterima' => $request->qty,
                 'LastUpdateDate' => Carbon::now(),
@@ -105,16 +108,17 @@ class KebutuhanController extends Controller
     public function update(Request $request, $id) // untuk mengisi jumlah yang diterima
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'idPosko' => 'numeric', // Validasi problem
+            $validator = Validator::make($request->all(), [ 
+                'idPosko' => 'numeric',
             ]);
 
             if ($validator->fails()) {
                 return ApiResponse::badRequest($validator->errors());
             }
 
-            DB::beginTransaction();
+            DB::beginTransaction(); // memulai transaksi
 
+            // update data kebutuhan
             $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->lockForUpdate()->update([
                 'IDBarang' => $request->idProduct,
                 'IDPosko' => $request->idPosko,
@@ -124,7 +128,7 @@ class KebutuhanController extends Controller
                 'LastUpdateBy' => Auth::user()->id,
             ]);
             if ($kebutuhan) {
-                DB::commit();
+                DB::commit();// jika berhasil maka commit data
                 $data_kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->with('barang', 'posko')->first();
                 return ApiResponse::created($data_kebutuhan);
             } else {
