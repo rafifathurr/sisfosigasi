@@ -23,15 +23,17 @@ class DonaturController extends Controller
     public function index()
     {
         try {
+            // Mengambil data donatur dengan paginasi
+            $donatur = Donatur::paginate(10); // Membatasi hasil menjadi 10 per halaman
 
-            $donatur = Donatur::paginate(10);
-
+            // Mengembalikan respons sukses dengan data donatur yang dipaginasi
             return ApiResponse::success($donatur);
         } catch (\Throwable $th) {
-
+            // Menangkap dan menampilkan pesan error jika terjadi kesalahan
             return ApiResponse::badRequest($th->getMessage());
         }
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -39,41 +41,47 @@ class DonaturController extends Controller
     public function store(Request $request)
     {
         try {
-
+            // Memulai transaksi database
             DB::beginTransaction();
 
+            // Validasi input dari request
             $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'nullable|string|max:50',
-                'alamat' => 'required|string|max:255',
-                'nomor_kontak' => 'required|string|max:16',
+                'nama_perusahaan' => 'nullable|string|max:50', // 'nama_perusahaan' bersifat opsional, tipe string, maksimal 50 karakter
+                'alamat' => 'required|string|max:255', // 'alamat' wajib, tipe string, maksimal 255 karakter
+                'nomor_kontak' => 'required|string|max:16', // 'nomor_kontak' wajib, tipe string, maksimal 16 karakter
             ]);
 
+            // Jika validasi gagal, kembalikan respons error
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json($validator->errors(), 422); // Mengembalikan error validasi dengan kode 422
             }
 
+            // Membuat entri baru pada tabel 'Donatur' menggunakan data dari request
             $donatur = Donatur::lockForUpdate()->create([
-                'NamaPerusahaan' => $request->nama_perusahaan,
-                'Alamat' => $request->alamat,
-                'NomorKontak' => $request->nomor_kontak,
-                'LastUpdateDate' => now(),
-                'LastUpdateBy' => Auth::user()->id
+                'NamaPerusahaan' => $request->nama_perusahaan, // Menyimpan 'nama_perusahaan' dari request
+                'Alamat' => $request->alamat, // Menyimpan 'alamat' dari request
+                'NomorKontak' => $request->nomor_kontak, // Menyimpan 'nomor_kontak' dari request
+                'LastUpdateDate' => now(), // Menyimpan tanggal update terakhir
+                'LastUpdateBy' => Auth::user()->id, // Menyimpan ID user yang melakukan update
             ]);
 
+            // Jika data donatur berhasil disimpan
             if ($donatur) {
-
+                // Komit transaksi
                 DB::commit();
-                return ApiResponse::created($donatur);
+                return ApiResponse::created($donatur); // Mengembalikan respons sukses dengan data donatur yang dibuat
             }
 
+            // Jika gagal, rollback transaksi
             DB::rollback();
-            return ApiResponse::badRequest();
+            return ApiResponse::badRequest(); // Mengembalikan respons error
         } catch (\Throwable $th) {
-
+            // Rollback transaksi jika terjadi exception
             DB::rollback();
-            return ApiResponse::badRequest($th->getMessage());
+            return ApiResponse::badRequest($th->getMessage()); // Mengembalikan error dengan pesan exception
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -81,17 +89,18 @@ class DonaturController extends Controller
     public function show(string $id)
     {
         try {
-
+            // Mencari data donatur berdasarkan IDDonatur
             $donatur = Donatur::where('IDDonatur', $id)->first();
 
+            // Jika data donatur ditemukan
             if (!is_null($donatur)) {
-
-                return ApiResponse::success($donatur);
+                return ApiResponse::success($donatur); // Mengembalikan respons sukses dengan data donatur
             }
 
-            return ApiResponse::notFound();
+            // Jika data donatur tidak ditemukan
+            return ApiResponse::notFound(); // Mengembalikan respons not found
         } catch (\Throwable $th) {
-
+            // Menangkap exception dan mengembalikan pesan error
             return ApiResponse::badRequest($th->getMessage());
         }
     }
@@ -102,39 +111,44 @@ class DonaturController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-
+            // Memulai transaksi database
             DB::beginTransaction();
 
+            // Validasi input dari request
             $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'nullable|string|max:50',
-                'alamat' => 'required|string|max:255',
-                'nomor_kontak' => 'required|string|max:16',
+                'nama_perusahaan' => 'nullable|string|max:50', // nama_perusahaan bersifat opsional, maksimal 50 karakter
+                'alamat' => 'required|string|max:255', // alamat wajib, maksimal 255 karakter
+                'nomor_kontak' => 'required|string|max:16', // nomor_kontak wajib, maksimal 16 karakter
             ]);
 
+            // Jika validasi gagal, kembalikan respons error
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json($validator->errors(), 422); // Mengembalikan error validasi dengan kode 422
             }
 
+            // Mengupdate data donatur di tabel berdasarkan ID yang diberikan
             $donatur = Donatur::lockForUpdate()->where('IDDonatur', $id)->update([
-                'NamaPerusahaan' => $request->nama_perusahaan,
-                'Alamat' => $request->alamat,
-                'NomorKontak' => $request->nomor_kontak,
-                'LastUpdateDate' => now(),
-                'LastUpdateBy' => Auth::user()->id
+                'NamaPerusahaan' => $request->nama_perusahaan, // Mengupdate nama perusahaan
+                'Alamat' => $request->alamat, // Mengupdate alamat
+                'NomorKontak' => $request->nomor_kontak, // Mengupdate nomor kontak
+                'LastUpdateDate' => now(), // Mengupdate waktu terakhir diperbarui
+                'LastUpdateBy' => Auth::user()->id, // Mengupdate user yang memperbarui data
             ]);
 
+            // Jika proses update berhasil
             if ($donatur) {
-
-                DB::commit();
+                DB::commit(); // Menyimpan perubahan ke database
+                // Mengembalikan respons sukses dengan data donatur terbaru
                 return ApiResponse::success(Donatur::where('IDDonatur', $id)->first());
             }
 
+            // Jika update gagal, rollback transaksi
             DB::rollback();
-            return ApiResponse::badRequest();
+            return ApiResponse::badRequest(); // Mengembalikan respons bad request
         } catch (\Throwable $th) {
-
+            // Rollback transaksi jika terjadi exception
             DB::rollback();
-            return ApiResponse::badRequest($th->getMessage());
+            return ApiResponse::badRequest($th->getMessage()); // Mengembalikan error dengan pesan exception
         }
     }
 

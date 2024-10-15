@@ -21,15 +21,17 @@ class KelompokController extends Controller
     public function index()
     {
         try {
-
+            // Mengambil daftar Kelompok dengan pagination 10 item per halaman
             $kelompok = Kelompok::paginate(10);
 
+            // Mengembalikan response sukses dengan data kelompok
             return ApiResponse::success($kelompok);
         } catch (\Throwable $th) {
-
+            // Menangkap exception dan mengembalikan pesan error
             return ApiResponse::badRequest($th->getMessage());
         }
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -37,34 +39,42 @@ class KelompokController extends Controller
     public function store(Request $request)
     {
         try {
-
+            // Memulai transaksi database
             DB::beginTransaction();
+
+            // Validasi input dari request
             $validator = Validator::make($request->all(), [
-                'nama_kelompok' => 'required|string|max:20',
-                'keterangan' => 'required|string',
+                'nama_kelompok' => 'required|string|max:20', // Nama kelompok wajib, maksimal 20 karakter
+                'keterangan' => 'required|string', // Keterangan wajib, tipe string
             ]);
 
+            // Jika validasi gagal, kembalikan error dengan status 422
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
+            // Membuat data kelompok baru dengan lock untuk mencegah konflik
             $store = Kelompok::lockForUpdate()->create([
                 'NamaKelompok' => $request->nama_kelompok,
-                'Keterangan' => $request->keterangan
+                'Keterangan' => $request->keterangan,
             ]);
 
+            // Jika penyimpanan berhasil, commit transaksi dan kembalikan response sukses
             if ($store) {
                 DB::commit();
                 return ApiResponse::created($store);
             }
 
+            // Rollback transaksi jika gagal
             DB::rollback();
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
-
+            // Rollback transaksi jika terjadi exception
+            DB::rollback();
             return ApiResponse::badRequest($th->getMessage());
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -72,19 +82,22 @@ class KelompokController extends Controller
     public function show(string $id)
     {
         try {
-
+            // Mencari data kelompok berdasarkan IDKelompok
             $kelompok = Kelompok::where('IDKelompok', $id)->first();
 
+            // Jika kelompok ditemukan, kembalikan response sukses
             if (!is_null($kelompok)) {
-
                 return ApiResponse::success($kelompok);
             }
 
+            // Jika kelompok tidak ditemukan, kembalikan response not found
             return ApiResponse::notFound();
         } catch (\Throwable $th) {
-            //throw $th;
+            // Tangani exception
+            return ApiResponse::badRequest($th->getMessage());
         }
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -92,34 +105,41 @@ class KelompokController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-
+            // Memulai transaksi database
             DB::beginTransaction();
+
+            // Validasi input dari request
             $validator = Validator::make($request->all(), [
-                'nama_kelompok' => 'required|string|max:20',
-                'keterangan' => 'required|string',
+                'nama_kelompok' => 'required|string|max:20', // Nama kelompok wajib, maksimal 20 karakter
+                'keterangan' => 'required|string', // Keterangan wajib
             ]);
 
+            // Jika validasi gagal, kembalikan error dengan status 422
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
 
+            // Update data kelompok berdasarkan IDKelompok
             $update = Kelompok::lockForUpdate()->where('IDKelompok', $id)->update([
                 'NamaKelompok' => $request->nama_kelompok,
-                'Keterangan' => $request->keterangan
+                'Keterangan' => $request->keterangan,
             ]);
 
+            // Jika update berhasil, commit transaksi dan kembalikan response sukses
             if ($update) {
                 DB::commit();
                 return ApiResponse::success(Kelompok::where('IDKelompok', $id)->first());
             }
 
+            // Rollback jika update gagal
             DB::rollback();
             return ApiResponse::badRequest();
         } catch (\Throwable $th) {
-
+            // Rollback transaksi jika terjadi exception
             return ApiResponse::badRequest($th->getMessage());
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
