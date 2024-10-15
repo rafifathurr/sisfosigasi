@@ -94,8 +94,10 @@ class PendudukController extends Controller
     public function show(string $id)
     {
         try {
-            // Mencari data Penduduk berdasarkan IDPenduduk
-            $penduduk = Penduduk::where('IDPenduduk', $id)->first();
+
+            $penduduk = Penduduk::with([
+                'kelompok'
+            ])->where('IDPenduduk', $id)->first();
 
             // Jika penduduk ditemukan, kembalikan response sukses
             if (!is_null($penduduk)) {
@@ -152,7 +154,9 @@ class PendudukController extends Controller
             // Jika update berhasil, commit transaksi dan kembalikan response sukses
             if ($store) {
                 DB::commit();
-                return ApiResponse::success(Penduduk::where('IDPenduduk', $id)->first());
+                return ApiResponse::success(Penduduk::with([
+                    'kelompok'
+                ])->where('IDPenduduk', $id)->first());
             }
 
             // Rollback jika update gagal

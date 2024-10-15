@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Posko\PoskoController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\Donatur\DonaturController;
 use App\Http\Controllers\Api\Kebutuhan\KebutuhanController;
 use App\Http\Controllers\Api\Kecamatan\BarangController;
@@ -31,20 +31,8 @@ Route::get('/', function () {
 
 Route::post('authenticate', [\App\Http\Controllers\Api\AuthController::class, 'authenticate']);
 Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
-Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('refresh', [\App\Http\Controllers\Api\AuthController::class, 'refresh']);
 
-// Route::middleware('auth:api')->post('user', function (Request $request) {
-//     Route::group(['controller' => PoskoController::class, 'prefix' => 'posko'], function () {
-//         Route::get('index', 'index');
-//         Route::get('show', 'show');
-//         Route::get('list-product', 'listProduct');
-//         Route::post('store', 'store');
-//         Route::get('regencies', 'regencies');
-//     });
-//     return $request->user();
-
-// });
 Route::middleware('auth:api')->group(function () {
     Route::post('user', function (Request $request) {
         return $request->user();

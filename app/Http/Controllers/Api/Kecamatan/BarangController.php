@@ -79,8 +79,10 @@ class BarangController extends Controller
     public function show($id)
     {
         try {
-            // Mencari data barang berdasarkan IDBarang
-            $barang = Barang::where('IDBarang', $id)->first();
+
+            $barang = Barang::with([
+                'jenisBarang'
+            ])->where('IDBarang', $id)->first();
 
             // Jika data barang ditemukan
             if (!is_null($barang)) {
@@ -125,7 +127,9 @@ class BarangController extends Controller
             // Jika berhasil diupdate, komit transaksi dan kembalikan respons sukses
             if ($update_barang == 1) {
                 DB::commit();
-                return ApiResponse::success(Barang::where('IDBarang', $id)->first()); // Mengembalikan data barang yang sudah diperbarui
+                return ApiResponse::success(Barang::with([
+                    'jenisBarang'
+                ])->where('IDBarang', $id)->first());
             }
 
             // Jika gagal, rollback transaksi

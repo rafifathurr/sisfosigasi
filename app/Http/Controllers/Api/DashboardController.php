@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Bantuan\Bantuan;
 use App\Models\Kebutuhan\Kebutuhan;
 use App\Models\Pengungsi\Pengungsi;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
