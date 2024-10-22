@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('KondisiKhusus', 255)->nullable();
             $table->dateTime('LastUpdateDate')->nullable();
             $table->integer('LastUpdateBy')->nullable();
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
 
             $table->foreign('IDPenduduk')->references('IDPenduduk')->on('penduduk');
             $table->foreign('IDPosko')->references('IDPosko')->on('posko');

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('IDJenisBarang')->autoIncrement();
             $table->string('JenisBarang', 20);
             $table->dateTime('LastUpdateDate')->nullable();
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
 
         });
     }

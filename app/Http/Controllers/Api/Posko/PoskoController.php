@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Posko;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Posko\Posko;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +28,7 @@ class PoskoController extends Controller
     }
     public function index()
     {
-        $posko = Posko::with(['user'])->paginate(10); // untuk dapatkan semua data posko, dengan dibatasi 10 data
+        $posko = Posko::with(['user'])->whereNull('deleted_at')->paginate(10); // untuk dapatkan semua data posko, dengan dibatasi 10 data
         return ApiResponse::success($posko);
     }
 
@@ -37,18 +39,18 @@ class PoskoController extends Controller
         if(!$posko){ // jika posko tidak ada, maka masuk kondisi error
             return ApiResponse::badRequest('Data posko tidak ditemukan.');
         }
-        
+
         return ApiResponse::success($posko); // data dari posko
     }
 
     public function store(Request $request)
     {
-        try { 
-            $validator = Validator::make($request->all(), [ // validasi data 
+        try {
+            $validator = Validator::make($request->all(), [ // validasi data
                 'idUser' => 'required|numeric',
                 'location' => 'required|max:50',
                 'problem' => 'required',
-                'solution' => 'required', 
+                'solution' => 'required',
 
             ]);
 
@@ -82,8 +84,8 @@ class PoskoController extends Controller
             $validator = Validator::make($request->all(), [
                 'idUser' => 'required',
                 'location' => 'required|max:50',
-                'problem' => 'required', 
-                'solution' => 'required', 
+                'problem' => 'required',
+                'solution' => 'required',
 
             ]);
 
@@ -111,4 +113,29 @@ class PoskoController extends Controller
             return ApiResponse::badRequest($e);
         }
     }
+
+    public function delete($id)
+    {
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $posko = Posko::where('IDPosko', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($posko) {
+                DB::commit();
+                return ApiResponse::success('posko berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('posko gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
+    }
+
 }

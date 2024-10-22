@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('Lokasi', 50);
             $table->string('Masalah', 255)->nullable();
             $table->string('SolusiMasalah', 255)->nullable();
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
+
         });
     }
 

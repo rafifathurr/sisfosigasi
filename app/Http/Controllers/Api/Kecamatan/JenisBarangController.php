@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api\Kecamatan;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Barang\JenisBarang;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,7 +25,7 @@ class JenisBarangController extends Controller
     {
         try {
             // Mengambil data jenis barang dengan pagination (10 data per halaman)
-            $jenis_barang = JenisBarang::paginate(10);
+            $jenis_barang = JenisBarang::whereNull('deleted_at')->paginate(10);
 
             // Mengembalikan response sukses dengan data jenis barang
             return ApiResponse::success($jenis_barang);
@@ -146,8 +149,28 @@ class JenisBarangController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $jenis_barang = JenisBarang::where('IDJenisBarang', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($jenis_barang) {
+                DB::commit();
+                return ApiResponse::success('jenis barang berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('jenis barang gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
     }
+
 }

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api\Kelompok;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Kelompok\Kelompok;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,7 +25,7 @@ class KelompokController extends Controller
     {
         try {
             // Mengambil daftar Kelompok dengan pagination 10 item per halaman
-            $kelompok = Kelompok::paginate(10);
+            $kelompok = Kelompok::whereNull('deleted_at')->paginate(10);
 
             // Mengembalikan response sukses dengan data kelompok
             return ApiResponse::success($kelompok);
@@ -144,8 +147,28 @@ class KelompokController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $kelompok = Kelompok::where('IDKelompok', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($kelompok) {
+                DB::commit();
+                return ApiResponse::success('kelompok berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('kelompok gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
     }
+
 }

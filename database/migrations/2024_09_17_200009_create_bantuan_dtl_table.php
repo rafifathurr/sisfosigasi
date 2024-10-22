@@ -17,7 +17,9 @@ return new class extends Migration
             $table->integer('IDBantuan');
             $table->integer('IDBarang');
             $table->integer('Jumlah')->nullable();
-            
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
+
             $table->foreign('IDBantuan')->references('IDBantuan')->on('bantuan');
             $table->foreign('IDBarang')->references('IDBarang')->on('barang');
 

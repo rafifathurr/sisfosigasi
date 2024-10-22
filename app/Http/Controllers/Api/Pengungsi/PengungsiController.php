@@ -24,7 +24,7 @@ class PengungsiController extends Controller
     public function index()
     {
         // menampilkan seluruh data pengungsi dengan dibatasi per 10 data
-        $pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->paginate(10);
+        $pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->whereNull('deleted_at')->paginate(10);
 
         return ApiResponse::success($pengungsi);
     }
@@ -44,9 +44,9 @@ class PengungsiController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [ // validasi parameter
-                'idPosko' => 'required|numeric', 
-                'idPenduduk' => 'required|numeric', 
-                'condition' => 'string|max:255', 
+                'idPosko' => 'required|numeric',
+                'idPenduduk' => 'required|numeric',
+                'condition' => 'string|max:255',
             ]);
 
             if ($validator->fails()) {// jika parameter ada yang tidak sesuai dengan aturan, maka masuk kondisi error
@@ -65,7 +65,7 @@ class PengungsiController extends Controller
 
 
             DB::beginTransaction(); // memulai transaksi
-            $pengungsi = Pengungsi::lockForUpdate()->create([ // membuat record baru 
+            $pengungsi = Pengungsi::lockForUpdate()->create([ // membuat record baru
                 'IDPenduduk' => $request->idPenduduk, // ini adalah id user
                 'IDPosko' => $request->idPosko,
                 'KondisiKhusus' => $request->condition,
@@ -93,8 +93,8 @@ class PengungsiController extends Controller
             }
             $validator = Validator::make($request->all(), [ // cek validasi
                 'idPosko' => 'required|numeric',
-                'idPenduduk' => 'required|numeric', 
-                'condition' => 'string|max:255', 
+                'idPenduduk' => 'required|numeric',
+                'condition' => 'string|max:255',
             ]);
 
 
@@ -134,4 +134,29 @@ class PengungsiController extends Controller
             return ApiResponse::badRequest($e);
         }
     }
+
+    public function delete($id)
+    {
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $pengungsi = Pengungsi::where('IDPengungsi', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($pengungsi) {
+                DB::commit();
+                return ApiResponse::success('pengungsi berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('pengungsi gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
+    }
+
 }

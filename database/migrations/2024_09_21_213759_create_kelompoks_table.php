@@ -15,6 +15,9 @@ return new class extends Migration
             $table->integer('IDKelompok')->autoIncrement();
             $table->string('NamaKelompok', 20);
             $table->string('Keterangan');
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
+
         });
     }
 

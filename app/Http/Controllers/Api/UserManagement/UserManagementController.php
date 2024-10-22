@@ -9,6 +9,7 @@ use App\Models\UserManagement\Role;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -61,7 +62,6 @@ class UserManagementController extends Controller
             } else {
                 DB::rollBack();
                 return ApiResponse::badRequest('user gagal disimpan');
-
             }
         } catch (Exception $e) {
             return ApiResponse::badRequest($e->getMessage());
@@ -137,11 +137,34 @@ class UserManagementController extends Controller
                 return ApiResponse::success($user_data);
             } else {
                 DB::rollBack();
-                return ApiResponse::success('User Gagal Disimpan');
-
+                return ApiResponse::badRequest('User Gagal Disimpan');
             }
         } catch (Exception $e) {
             return ApiResponse::success($e->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $user = User::where('id', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($user) {
+                DB::commit();
+                return ApiResponse::success('User berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('user gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
         }
     }
 }

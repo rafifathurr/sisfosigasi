@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api\Penduduk;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Penduduk\Penduduk;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,7 +25,7 @@ class PendudukController extends Controller
     {
         try {
             // Mengambil daftar Penduduk dengan relasi kelompok, dan melakukan pagination
-            $penduduk = Penduduk::with(['kelompok'])->paginate(10);
+            $penduduk = Penduduk::with(['kelompok'])->whereNull('deleted_at')->paginate(10);
 
             // Mengembalikan response sukses dengan data penduduk
             return ApiResponse::success($penduduk);
@@ -173,8 +176,28 @@ class PendudukController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $penduduk = Penduduk::where('IDPenduduk', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($penduduk) {
+                DB::commit();
+                return ApiResponse::success('penduduk berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('penduduk gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
     }
+
 }

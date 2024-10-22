@@ -39,13 +39,14 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::controller(UserManagementController::class)
-    ->prefix('user-management')
-    ->group(function () {
-        Route::get('index', 'index');
-        Route::get('show/{id}', 'show');
-        Route::post('store', 'store');
-        Route::put('update/{id}', 'update');
-    });
+        ->prefix('user-management')
+        ->group(function () {
+            Route::get('index', 'index');
+            Route::get('show/{id}', 'show');
+            Route::post('store', 'store');
+            Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
+        });
 
     Route::controller(PoskoController::class)
         ->prefix('posko')
@@ -54,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(PengungsiController::class)
@@ -63,6 +65,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(KebutuhanController::class)
@@ -73,7 +76,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::put('qtyReceived/{id}', 'qtyReceived');
             Route::put('update/{id}', 'update');
-
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(BarangController::class)
@@ -83,6 +86,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(JenisBarangController::class)
@@ -92,6 +96,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(KelompokController::class)
@@ -101,6 +106,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(PendudukController::class)
@@ -110,6 +116,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(DonaturController::class)
@@ -119,6 +126,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::controller(BantuanController::class)
@@ -129,6 +137,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
         });
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
