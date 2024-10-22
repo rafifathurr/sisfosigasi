@@ -7,6 +7,8 @@ use App\Http\Helpers\ApiResponse;
 use App\Models\Bantuan\Bantuan;
 use App\Models\Bantuan\Bantuan_Dtl;
 use App\Models\Barang\Barang;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +27,7 @@ class BantuanController extends Controller
     {
         try {
             // Mengambil data bantuan beserta relasinya
-            $bantuan = Bantuan::with([
+            $bantuan = Bantuan::whereNull('deleted_at')->with([
                 'donatur', // Memuat relasi 'donatur'
                 'bantuanDetail.barang' // Memuat relasi 'bantuanDetail' dan 'barang'
             ])
@@ -258,8 +260,28 @@ class BantuanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $bantuan = Bantuan::where('IDBantuan', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($bantuan) {
+                DB::commit();
+                return ApiResponse::success('bantuan berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('bantuan gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
     }
+
 }

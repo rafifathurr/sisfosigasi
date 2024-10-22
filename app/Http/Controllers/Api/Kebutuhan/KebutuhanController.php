@@ -22,7 +22,7 @@ class KebutuhanController extends Controller
     public function index()
     {
         // menampilkan data kebutuhan dengan dibatasi 10 record
-        $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->paginate(10);
+        $kebutuhan = Kebutuhan::whereNull('deleted_at')->with(['posko.user', 'barang.jenisBarang'])->paginate(10);
         return ApiResponse::success($kebutuhan);
     }
 
@@ -77,7 +77,7 @@ class KebutuhanController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'qty' => 'numeric', 
+                'qty' => 'numeric',
             ]);
 
             if ($validator->fails()) {
@@ -108,7 +108,7 @@ class KebutuhanController extends Controller
     public function update(Request $request, $id) // untuk mengisi jumlah yang diterima
     {
         try {
-            $validator = Validator::make($request->all(), [ 
+            $validator = Validator::make($request->all(), [
                 'idPosko' => 'numeric',
             ]);
 
@@ -139,4 +139,29 @@ class KebutuhanController extends Controller
             return ApiResponse::badRequest($e);
         }
     }
+
+    public function delete($id)
+    {
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $kebutuhan = Kebutuhan::where('IDKebutuhan', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($kebutuhan) {
+                DB::commit();
+                return ApiResponse::success('kebutuhan berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('kebutuhan gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
+    }
+
 }

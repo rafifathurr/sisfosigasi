@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('IDJenisBarang')->nullable();
             $table->float('HargaSatuan',0,2)->nullable();
             $table->dateTime('LastUpdateDate')->nullable();
+            $table->dateTime('deleted_at')->nullable();
+            $table->integer('deleted_by')->nullable();
 
             $table->foreign('IDJenisBarang')->references('IDJenisBarang')->on('jenis_barang');
 

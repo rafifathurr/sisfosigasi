@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Donatur;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Donatur\Donatur;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +26,7 @@ class DonaturController extends Controller
     {
         try {
             // Mengambil data donatur dengan paginasi
-            $donatur = Donatur::paginate(10); // Membatasi hasil menjadi 10 per halaman
+            $donatur = Donatur::whereNull('deleted_at')->paginate(10); // Membatasi hasil menjadi 10 per halaman
 
             // Mengembalikan respons sukses dengan data donatur yang dipaginasi
             return ApiResponse::success($donatur);
@@ -155,8 +157,28 @@ class DonaturController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        //
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $donatur = Donatur::where('IDDonatur', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($donatur) {
+                DB::commit();
+                return ApiResponse::success('donatur berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('donatur gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
     }
+
 }

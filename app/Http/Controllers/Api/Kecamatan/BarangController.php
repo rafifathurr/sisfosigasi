@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Barang\Barang;
 use App\Models\Barang\JenisBarang;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,7 +24,7 @@ class BarangController extends Controller
     {
         try {
             // Mengambil data barang beserta relasi 'jenisBarang' menggunakan eager loading
-            $barang = Barang::with([
+            $barang = Barang::whereNull('deleted_at')->with([
                 'jenisBarang' // Memuat relasi 'jenisBarang' untuk setiap barang
             ])->paginate(10); // Membatasi hasil menjadi 10 data per halaman
 
@@ -141,4 +144,29 @@ class BarangController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    public function delete($id)
+    {
+        if (!$id) {
+            return ApiResponse::badRequest('parameter id tidak ditemukan');
+        }
+        try {
+            DB::beginTransaction();
+
+            $barang = Barang::where('IDBarang', $id)->update([
+                'deleted_at' => Carbon::now(),
+                'deleted_by' => Auth::user()->id,
+            ]);
+            if ($barang) {
+                DB::commit();
+                return ApiResponse::success('barang berhasil dihapus');
+            } else {
+                DB::rollBack();
+                return ApiResponse::badRequest('barang gagal dihapus');
+            }
+        } catch (Exception $e) {
+            return ApiResponse::badRequest($e->getMessage());
+        }
+    }
+
 }
