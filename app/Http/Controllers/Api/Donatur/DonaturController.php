@@ -17,7 +17,8 @@ class DonaturController extends Controller
 
     public function __construct()
     {
-        $this->middleware('role:bansos');
+        $this->middleware('role:kecamatan')->only('index');
+        $this->middleware('role:bansos|kecamatan');
     }
     /**
      * Display a listing of the resource.
@@ -180,5 +181,4 @@ class DonaturController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }
