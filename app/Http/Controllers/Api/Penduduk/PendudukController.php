@@ -21,11 +21,21 @@ class PendudukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
             // Mengambil daftar Penduduk dengan relasi kelompok, dan melakukan pagination
-            $penduduk = Penduduk::with(['kelompok'])->whereNull('deleted_at')->paginate(10);
+            $data_penduduk = Penduduk::with(['kelompok'])->whereNull('deleted_at');
+
+            //filter data pengungsi berdasarkan desa
+            if(isset($request->desa)) {
+                $data_penduduk->where('desa', 'LIKE', '%' . $request->desa . '%'); // pencarian menggunakan type string
+            }
+            if(isset($request->kelompok)) {
+                $data_penduduk->where('Kelompok', $request->kelompok);
+            }
+
+            $penduduk = $data_penduduk->paginate(10);
 
             // Mengembalikan response sukses dengan data penduduk
             return ApiResponse::success($penduduk);

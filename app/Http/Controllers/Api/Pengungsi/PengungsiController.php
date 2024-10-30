@@ -21,10 +21,18 @@ class PengungsiController extends Controller
         $this->middleware('role:posko-utama|posko');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // menampilkan seluruh data pengungsi dengan dibatasi per 10 data
-        $pengungsi = Pengungsi::with(['penduduk', 'posko.user'])->whereNull('deleted_at')->paginate(10);
+        $data_pengungsi = Pengungsi::with(['penduduk', 'posko.user']);
+        if(isset($request->posko)) { // pencarian berdasarkan id posko
+            $data_pengungsi->where('IDPosko', $request->posko);
+        }
+        if(isset($request->penduduk)) { // pencarian berdasarkan id penduduk
+            $data_pengungsi->where('IDPenduduk', $request->penduduk);
+        }
+
+        $pengungsi = $data_pengungsi->paginate(10);
 
         return ApiResponse::success($pengungsi);
     }
