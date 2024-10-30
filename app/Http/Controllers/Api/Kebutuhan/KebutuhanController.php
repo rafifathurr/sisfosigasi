@@ -19,10 +19,14 @@ class KebutuhanController extends Controller
         $this->middleware('role:posko-utama|posko');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // menampilkan data kebutuhan dengan dibatasi 10 record
-        $kebutuhan = Kebutuhan::whereNull('deleted_at')->with(['posko.user', 'barang.jenisBarang'])->paginate(10);
+        $data_kebutuhan = Kebutuhan::whereNull('deleted_at')->with(['posko.user', 'barang.jenisBarang']);
+        if(isset($request->posko)) { // pencarian berdasarkan id posko
+            $data_kebutuhan->where('IDPosko', $request->posko);
+        }
+        $kebutuhan = $data_kebutuhan->paginate(10);
         return ApiResponse::success($kebutuhan);
     }
 
