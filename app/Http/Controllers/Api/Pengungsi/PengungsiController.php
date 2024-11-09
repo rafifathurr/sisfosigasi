@@ -36,7 +36,7 @@ class PengungsiController extends Controller
         // pencarian berdasarkan id kelompok
         if (isset($request->kelompok)) {
             $data_pengungsi->whereHas('penduduk', function ($query) use ($request) {
-                $query->where('Kelompok', $request->penduduk);
+                $query->where('Kelompok', $request->kelompok);
             });
         }
 
