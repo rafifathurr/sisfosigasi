@@ -16,6 +16,7 @@ class KelompokController extends Controller
 {
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('role:kecamatan');
     }
     /**
@@ -156,7 +157,7 @@ class KelompokController extends Controller
                 'deleted_at' => Carbon::now(),
                 'deleted_by' => Auth::user()->id,
             ]);
-            
+
             if ($kelompok) {
                 DB::commit();
                 return ApiResponse::success('kelompok berhasil dihapus');

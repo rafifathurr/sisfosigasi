@@ -18,6 +18,7 @@ class DistribusiBantuanController extends Controller
 {
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('role:bansos');
         $this->middleware('role:posko|posko-utama')->only('index');
     }

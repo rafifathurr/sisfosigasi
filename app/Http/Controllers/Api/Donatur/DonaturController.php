@@ -17,6 +17,7 @@ class DonaturController extends Controller
 
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('role:kecamatan')->only('index');
         $this->middleware('role:bansos|kecamatan');
     }

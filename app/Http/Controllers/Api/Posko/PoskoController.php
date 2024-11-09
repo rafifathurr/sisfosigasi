@@ -16,6 +16,7 @@ class PoskoController extends Controller
 {
     public function __construct()
     {
+        parent::__construct();
         /**
          * Super Posko Utama Access
          */
