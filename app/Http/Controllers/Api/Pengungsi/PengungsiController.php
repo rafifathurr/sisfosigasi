@@ -26,16 +26,18 @@ class PengungsiController extends Controller
     public function index(Request $request)
     {
         // menampilkan seluruh data pengungsi dengan dibatasi per 10 data
-        $data_pengungsi = Pengungsi::with(['penduduk', 'posko.user']);
+        $data_pengungsi = Pengungsi::with(['penduduk.kelompok', 'posko.user']);
 
         // pencarian berdasarkan id posko
         if (isset($request->posko)) {
             $data_pengungsi->where('IDPosko', $request->posko);
         }
 
-        // pencarian berdasarkan id penduduk
-        if (isset($request->penduduk)) {
-            $data_pengungsi->where('IDPenduduk', $request->penduduk);
+        // pencarian berdasarkan id kelompok
+        if (isset($request->kelompok)) {
+            $data_pengungsi->whereHas('penduduk', function ($query) use ($request) {
+                $query->where('Kelompok', $request->penduduk);
+            });
         }
 
         $pengungsi = $data_pengungsi->paginate(10);
