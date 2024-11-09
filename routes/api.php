@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Penduduk\PendudukController;
 use App\Http\Controllers\Api\Pengungsi\PengungsiController;
 use App\Http\Controllers\Api\Bantuan\BantuanController;
 use App\Http\Controllers\Api\DistribusiBantuan\DistribusiBantuanController;
+use App\Http\Controllers\Api\LogActivity\LogActivityController;
 use App\Http\Controllers\Api\UserManagement\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -154,6 +155,12 @@ Route::middleware('auth:api')->group(function () {
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
             Route::delete('delete/{id}', 'delete');
+        });
+
+    Route::controller(LogActivityController::class)
+        ->prefix('log-activity')
+        ->group(function () {
+            Route::get('/', 'index');
         });
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
