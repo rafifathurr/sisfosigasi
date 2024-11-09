@@ -16,6 +16,6 @@ class Penduduk extends Model
 
     public function kelompok()
     {
-        return $this->hasOne(Kelompok::class, 'Kelompok', 'IDKelompok');
+        return $this->hasOne(Kelompok::class, 'IDKelompok', 'Kelompok');
     }
 }
