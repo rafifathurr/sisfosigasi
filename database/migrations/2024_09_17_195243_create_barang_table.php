@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer('deleted_by')->nullable();
 
             $table->foreign('IDJenisBarang')->references('IDJenisBarang')->on('jenis_barang');
-
         });
     }
 

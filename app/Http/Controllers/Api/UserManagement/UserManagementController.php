@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Api\UserManagement;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
+use App\Models\Posko\Posko;
 use App\Models\User;
-use App\Models\UserManagement\Role;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
 {
@@ -25,6 +26,23 @@ class UserManagementController extends Controller
     {
         $user = User::with('roles')->whereNull('deleted_at')->paginate(10);
         return ApiResponse::success($user);
+    }
+
+    public function createOrEdit()
+    {
+        try {
+
+            $posko = Posko::whereNull('deleted_by')->whereNull('deleted_at')->get();
+            $roles = Role::all();
+
+            return ApiResponse::success([
+                'posko' => $posko,
+                'roles' => $roles
+            ]);
+        } catch (\Throwable $th) {
+
+            return ApiResponse::badRequest($th->getMessage());
+        }
     }
 
     public function store(Request $request)
@@ -47,6 +65,7 @@ class UserManagementController extends Controller
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'password' => Hash::make($request->password),
+                'IDPosko' => $request->idPosko,
             ]);
 
             $roleName = Role::find($request->role)->name;
@@ -106,8 +125,9 @@ class UserManagementController extends Controller
                 'email' => 'required|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'nullable|confirmed',
                 'address' => 'string',
-
             ]);
+
+            $data['IDPosko'] = isset($request->idPosko) ? $request->idPosko : null;
 
             // Cek jika password diisi, jika tidak unset dari $data
             if ($request->filled('password')) {
@@ -146,16 +166,13 @@ class UserManagementController extends Controller
 
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
             $user = User::where('id', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
             ]);
+
             if ($user) {
                 DB::commit();
                 return ApiResponse::success('User berhasil dihapus');

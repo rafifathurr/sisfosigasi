@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_barang', function (Blueprint $table) {
+        Schema::create('log_activity', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->integer('IDJenisBarang')->autoIncrement();
-            $table->string('JenisBarang', 20);
-            $table->dateTime('LastUpdateDate')->nullable();
-            $table->dateTime('deleted_at')->nullable();
-            $table->integer('deleted_by')->nullable();
+            $table->integer('IDLogActivity')->autoIncrement();
+            $table->integer('IDUser');
+            $table->timestamps();
+
+            $table->foreign('IDUser')->references('id')->on('users');
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_barang');
+        Schema::dropIfExists('log_activity');
     }
 };

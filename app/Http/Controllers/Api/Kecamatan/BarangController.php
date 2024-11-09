@@ -24,7 +24,7 @@ class BarangController extends Controller
     {
         try {
             // Mengambil data barang beserta relasi 'jenisBarang' menggunakan eager loading
-            $barang = Barang::whereNull('deleted_at')->with([
+            $barang = Barang::whereNull('deleted_by')->whereNull('deleted_at')->with([
                 'jenisBarang' // Memuat relasi 'jenisBarang' untuk setiap barang
             ])->paginate(10); // Membatasi hasil menjadi 10 data per halaman
 
@@ -33,6 +33,21 @@ class BarangController extends Controller
         } catch (\Throwable $th) {
             // Menangkap exception dan mengembalikan pesan error dengan status 500 (internal server error)
             return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
+
+    public function createOrEdit()
+    {
+        try {
+
+            $jenis_barang = JenisBarang::whereNull('deleted_by')->whereNull('deleted_at')->get();
+
+            return ApiResponse::success([
+                'jenis_barang' => $jenis_barang
+            ]);
+        } catch (\Throwable $th) {
+
+            return ApiResponse::badRequest($th->getMessage());
         }
     }
 
@@ -147,9 +162,6 @@ class BarangController extends Controller
 
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
@@ -168,5 +180,4 @@ class BarangController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

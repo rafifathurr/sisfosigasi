@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Kelompok\KelompokController;
 use App\Http\Controllers\Api\Penduduk\PendudukController;
 use App\Http\Controllers\Api\Pengungsi\PengungsiController;
 use App\Http\Controllers\Api\Bantuan\BantuanController;
+use App\Http\Controllers\Api\DistribusiBantuan\DistribusiBantuanController;
 use App\Http\Controllers\Api\UserManagement\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +42,8 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(UserManagementController::class)
         ->prefix('user-management')
         ->group(function () {
-            Route::get('index', 'index');
+            Route::get('/', 'index');
+            Route::get('create-edit', 'createOrEdit');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
@@ -51,7 +53,7 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(PoskoController::class)
         ->prefix('posko')
         ->group(function () {
-            Route::get('index', 'index');
+            Route::get('/', 'index');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
@@ -61,7 +63,8 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(PengungsiController::class)
         ->prefix('pengungsi')
         ->group(function () {
-            Route::get('index', 'index');
+            Route::get('/', 'index');
+            Route::get('create-edit', 'createOrEdit');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('update/{id}', 'update');
@@ -71,7 +74,8 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(KebutuhanController::class)
         ->prefix('kebutuhan')
         ->group(function () {
-            Route::get('index', 'index');
+            Route::get('/', 'index');
+            Route::get('/create-edit', 'createOrEdit');
             Route::get('show/{id}', 'show');
             Route::post('store', 'store');
             Route::put('qtyReceived/{id}', 'qtyReceived');
@@ -83,6 +87,7 @@ Route::middleware('auth:api')->group(function () {
         ->prefix('barang')
         ->group(function () {
             Route::get('/', 'index');
+            Route::get('create-edit', 'createOrEdit');
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
             Route::put('update/{id}', 'update');
@@ -133,9 +138,20 @@ Route::middleware('auth:api')->group(function () {
         ->prefix('bantuan')
         ->group(function () {
             Route::get('/', 'index');
-            Route::get('/createOrEdit', 'createOrEdit');
+            Route::get('/create-edit', 'createOrEdit');
             Route::post('store', 'store');
             Route::get('show/{id}', 'show');
+            Route::put('update/{id}', 'update');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+    Route::controller(DistribusiBantuanController::class)
+        ->prefix('distribusi-bantuan')
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::get('create-edit', 'createOrEdit');
+            Route::get('show/{id}', 'show');
+            Route::post('store', 'store');
             Route::put('update/{id}', 'update');
             Route::delete('delete/{id}', 'delete');
         });

@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Barang extends Model
 {
     use HasFactory;
-
-    protected $table = 'barang';
     protected $primaryKey = 'IDBarang';
+    protected $table = 'barang';
     protected $guarded = [];
     public $timestamps = false;
 
     public function jenisBarang()
     {
-        return $this->belongsTo(JenisBarang::class, 'IDJenisBarang', 'IDJenisBarang');
+        return $this->hasOne(JenisBarang::class, 'IDJenisBarang', 'IDJenisBarang');
     }
 }

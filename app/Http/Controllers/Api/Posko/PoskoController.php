@@ -17,18 +17,18 @@ class PoskoController extends Controller
     public function __construct()
     {
         /**
-         * Super Admin Access
+         * Super Posko Utama Access
          */
         $this->middleware('role:posko-utama', ['except' => ['index', 'show']]);
 
         /**
-         * Super Admin and Pemerintah Access
+         * Super Posko Utama and Posko Access
          */
         $this->middleware('role:posko-utama|posko', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
     }
     public function index()
     {
-        $posko = Posko::with(['user'])->whereNull('deleted_at')->paginate(10); // untuk dapatkan semua data posko, dengan dibatasi 10 data
+        $posko = Posko::with(['user'])->whereNull('deleted_by')->whereNull('deleted_at')->paginate(10); // untuk dapatkan semua data posko, dengan dibatasi 10 data
         return ApiResponse::success($posko);
     }
 
@@ -36,7 +36,8 @@ class PoskoController extends Controller
     {
         // menampilkan data posko berdasarkan parameter id dengan relasi user
         $posko = Posko::with(['user'])->where('IDPosko', $id)->first();
-        if(!$posko){ // jika posko tidak ada, maka masuk kondisi error
+
+        if(is_null($posko)){ // jika posko tidak ada, maka masuk kondisi error
             return ApiResponse::badRequest('Data posko tidak ditemukan.');
         }
 
@@ -116,9 +117,6 @@ class PoskoController extends Controller
 
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 

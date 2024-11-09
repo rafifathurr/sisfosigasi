@@ -25,13 +25,15 @@ class PendudukController extends Controller
     {
         try {
             // Mengambil daftar Penduduk dengan relasi kelompok, dan melakukan pagination
-            $data_penduduk = Penduduk::with(['kelompok'])->whereNull('deleted_at');
+            $data_penduduk = Penduduk::with(['kelompok'])->whereNull('deleted_by')->whereNull('deleted_at');
 
-            //filter data pengungsi berdasarkan desa
-            if(isset($request->desa)) {
+            // pencarian berdasarkan desa
+            if (isset($request->desa)) {
                 $data_penduduk->where('desa', 'LIKE', '%' . $request->desa . '%'); // pencarian menggunakan type string
             }
-            if(isset($request->kelompok)) {
+
+            // pencarian berdasarkan kelompok
+            if (isset($request->kelompok)) {
                 $data_penduduk->where('Kelompok', $request->kelompok);
             }
 
@@ -188,9 +190,6 @@ class PendudukController extends Controller
      */
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
@@ -209,5 +208,4 @@ class PendudukController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

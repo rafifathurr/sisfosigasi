@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 class Bantuan_Dtl extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'IDBantuanDTL';
     protected $table = 'bantuan_dtl';
     protected $guarded = [];
     public $timestamps = false;
 
     public function barang()
     {
-        return $this->belongsTo(Barang::class, 'IDBarang', 'IDBarang');
+        return $this->hasOne(Barang::class, 'IDBarang', 'IDBarang');
     }
 }

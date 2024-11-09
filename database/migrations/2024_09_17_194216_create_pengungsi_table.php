@@ -24,7 +24,6 @@ return new class extends Migration
 
             $table->foreign('IDPenduduk')->references('IDPenduduk')->on('penduduk');
             $table->foreign('IDPosko')->references('IDPosko')->on('posko');
-
         });
     }
 

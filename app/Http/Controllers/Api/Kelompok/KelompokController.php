@@ -25,7 +25,7 @@ class KelompokController extends Controller
     {
         try {
             // Mengambil daftar Kelompok dengan pagination 10 item per halaman
-            $kelompok = Kelompok::whereNull('deleted_at')->paginate(10);
+            $kelompok = Kelompok::whereNull('deleted_by')->whereNull('deleted_at')->paginate(10);
 
             // Mengembalikan response sukses dengan data kelompok
             return ApiResponse::success($kelompok);
@@ -149,9 +149,6 @@ class KelompokController extends Controller
      */
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
@@ -159,6 +156,7 @@ class KelompokController extends Controller
                 'deleted_at' => Carbon::now(),
                 'deleted_by' => Auth::user()->id,
             ]);
+            
             if ($kelompok) {
                 DB::commit();
                 return ApiResponse::success('kelompok berhasil dihapus');

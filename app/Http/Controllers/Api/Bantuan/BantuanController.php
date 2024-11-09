@@ -7,6 +7,7 @@ use App\Http\Helpers\ApiResponse;
 use App\Models\Bantuan\Bantuan;
 use App\Models\Bantuan\Bantuan_Dtl;
 use App\Models\Barang\Barang;
+use App\Models\Donatur\Donatur;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class BantuanController extends Controller
     {
         try {
             // Mengambil data bantuan beserta relasinya
-            $bantuan = Bantuan::whereNull('deleted_at')->with([
+            $bantuan = Bantuan::whereNull('deleted_by')->whereNull('deleted_at')->with([
                 'donatur', // Memuat relasi 'donatur'
                 'bantuanDetail.barang' // Memuat relasi 'bantuanDetail' dan 'barang'
             ])
@@ -42,19 +43,17 @@ class BantuanController extends Controller
         }
     }
 
-
     public function createOrEdit()
     {
         try {
 
-            $barang = Barang::all();
+            $donatur = Donatur::whereNull('deleted_by')->whereNull('deleted_at')->get();
+            $barang = Barang::whereNull('deleted_by')->whereNull('deleted_at')->get();
 
-            if ($barang->isEmpty()) {
-
-                return ApiResponse::success($barang);
-            }
-
-            return ApiResponse::notFound();
+            return ApiResponse::success([
+                'donatur' => $donatur,
+                'barang' => $barang
+            ]);
         } catch (\Throwable $th) {
 
             return ApiResponse::badRequest($th->getMessage());
@@ -262,9 +261,6 @@ class BantuanController extends Controller
      */
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
@@ -283,5 +279,4 @@ class BantuanController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

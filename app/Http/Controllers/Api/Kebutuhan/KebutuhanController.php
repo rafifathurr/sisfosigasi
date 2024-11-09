@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\Kebutuhan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
+use App\Models\Barang\Barang;
 use App\Models\Kebutuhan\Kebutuhan;
+use App\Models\Posko\Posko;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -22,21 +24,43 @@ class KebutuhanController extends Controller
     public function index(Request $request)
     {
         // menampilkan data kebutuhan dengan dibatasi 10 record
-        $data_kebutuhan = Kebutuhan::whereNull('deleted_at')->with(['posko.user', 'barang.jenisBarang']);
-        if(isset($request->posko)) { // pencarian berdasarkan id posko
+        $data_kebutuhan = Kebutuhan::whereNull('deleted_by')->whereNull('deleted_at')->with(['posko.user', 'barang.jenisBarang']);
+
+        // pencarian berdasarkan id posko
+        if(isset($request->posko)) {
             $data_kebutuhan->where('IDPosko', $request->posko);
         }
+
         $kebutuhan = $data_kebutuhan->paginate(10);
         return ApiResponse::success($kebutuhan);
     }
 
+    public function createOrEdit()
+    {
+        try {
+
+            $barang = Barang::whereNull('deleted_by')->whereNull('deleted_at')->get();
+            $posko = Posko::whereNull('deleted_by')->whereNull('deleted_at')->get();
+
+            return ApiResponse::success([
+                'barang' => $barang,
+                'posko' => $posko
+            ]);
+        } catch (\Throwable $th) {
+
+            return ApiResponse::badRequest($th->getMessage());
+        }
+    }
+
     public function show($id)  // id yang digunakan idposko
     {
-        // tampilan data berdasarkan id posko
+        // tampilan data kebutuhan
         $kebutuhan = Kebutuhan::with(['posko.user', 'barang.jenisBarang'])->where('IDKebutuhan', $id)->first();
-        if (!$kebutuhan) {
-            return ApiResponse::badRequest('Data kebutuhan tidak ditemukan.');
+
+        if (is_null($kebutuhan)) {
+            return ApiResponse::notFound('Data kebutuhan tidak ditemukan.');
         }
+
         return ApiResponse::success($kebutuhan);
     }
 
@@ -62,9 +86,9 @@ class KebutuhanController extends Controller
                     'LastUpdateBy' => Auth::user()->id,
                 ]);
 
-                if (!$kebutuhan) { // jika kenutuhan ada error, maka batalkan update dan return error
+                if (!$kebutuhan) { // jika kebutuhan ada error, maka batalkan update dan return error
                     DB::rollBack();
-                    return ApiResponse::badRequest('Data kebutuhan tidak dapat disimpan.');
+                    return ApiResponse::notFound('Data kebutuhan tidak dapat disimpan.');
                 }
 
                 array_push($arr_kebutuhan, $kebutuhan);// jika tidak error maka mengirimkan array
@@ -146,9 +170,6 @@ class KebutuhanController extends Controller
 
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 
@@ -167,5 +188,4 @@ class KebutuhanController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 class Penduduk extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'IDPenduduk';
     protected $table = 'penduduk';
     protected $guarded = [];
     public $timestamps = false;
 
     public function kelompok()
     {
-        return $this->belongsTo(Kelompok::class, 'Kelompok', 'IDKelompok');
+        return $this->hasOne(Kelompok::class, 'Kelompok', 'IDKelompok');
     }
 }

@@ -25,7 +25,6 @@ return new class extends Migration
             $table->integer('LastUpdateBy')->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
-
         });
     }
 

@@ -22,7 +22,6 @@ return new class extends Migration
 
             $table->foreign('IDBantuan')->references('IDBantuan')->on('bantuan');
             $table->foreign('IDBarang')->references('IDBarang')->on('barang');
-
         });
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Posko extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'IDPosko';
     protected $table = 'posko';
     protected $guarded = [];
     public $timestamps = false;

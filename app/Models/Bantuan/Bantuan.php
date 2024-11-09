@@ -16,7 +16,7 @@ class Bantuan extends Model
 
     public function donatur()
     {
-        return $this->belongsTo(Donatur::class, 'IDDonatur', 'IDDonatur');
+        return $this->hasOne(Donatur::class, 'IDDonatur', 'IDDonatur');
     }
 
     public function bantuanDetail()

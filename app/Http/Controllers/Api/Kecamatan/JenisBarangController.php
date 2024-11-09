@@ -25,7 +25,7 @@ class JenisBarangController extends Controller
     {
         try {
             // Mengambil data jenis barang dengan pagination (10 data per halaman)
-            $jenis_barang = JenisBarang::whereNull('deleted_at')->paginate(10);
+            $jenis_barang = JenisBarang::whereNull('deleted_by')->whereNull('deleted_at')->paginate(10);
 
             // Mengembalikan response sukses dengan data jenis barang
             return ApiResponse::success($jenis_barang);
@@ -151,9 +151,6 @@ class JenisBarangController extends Controller
      */
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 

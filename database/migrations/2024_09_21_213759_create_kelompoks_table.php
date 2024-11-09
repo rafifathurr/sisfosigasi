@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('Keterangan');
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
-
         });
     }
 

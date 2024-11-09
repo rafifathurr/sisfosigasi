@@ -11,18 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengguna', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-            $table->integer('IDPengguna')->autoIncrement();
-            $table->string('Nama', 20);
-            $table->string('NomorKontak', 12);
-            $table->string('Satuan', 10)->nullable();
+        Schema::table('users', function (Blueprint $table) {
             $table->integer('IDPosko')->nullable();
-            $table->dateTime('deleted_at')->nullable();
-            $table->integer('deleted_by')->nullable();
 
             $table->foreign('IDPosko')->references('IDPosko')->on('posko');
-
         });
     }
 
@@ -31,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengguna');
+        //
     }
 };

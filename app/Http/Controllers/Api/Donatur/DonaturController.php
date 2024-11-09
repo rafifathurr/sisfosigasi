@@ -27,7 +27,7 @@ class DonaturController extends Controller
     {
         try {
             // Mengambil data donatur dengan paginasi
-            $donatur = Donatur::whereNull('deleted_at')->paginate(10); // Membatasi hasil menjadi 10 per halaman
+            $donatur = Donatur::whereNull('deleted_by')->whereNull('deleted_at')->paginate(10); // Membatasi hasil menjadi 10 per halaman
 
             // Mengembalikan respons sukses dengan data donatur yang dipaginasi
             return ApiResponse::success($donatur);
@@ -160,9 +160,6 @@ class DonaturController extends Controller
      */
     public function delete($id)
     {
-        if (!$id) {
-            return ApiResponse::badRequest('parameter id tidak ditemukan');
-        }
         try {
             DB::beginTransaction();
 

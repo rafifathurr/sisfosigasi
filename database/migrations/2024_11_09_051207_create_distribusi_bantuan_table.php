@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kebutuhan', function (Blueprint $table) {
+        Schema::create('distribusi_bantuan', function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->integer('IDKebutuhan')->autoIncrement();
-            $table->integer('IDBarang');
+            $table->integer('IDDistribusiBantuan')->autoIncrement();
             $table->integer('IDPosko');
-            $table->integer('JumlahKebutuhan')->nullable();
-            $table->integer('JumlahDiterima')->nullable();
-            $table->dateTime('LastUpdateDate')->nullable();
-            $table->integer('LastUpdateBy')->nullable();
+            $table->integer('IDBantuan');
+            $table->dateTime('TanggalDistribusi');
+            $table->text('Deskripsi')->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();
 
             $table->foreign('IDPosko')->references('IDPosko')->on('posko');
-            $table->foreign('IDBarang')->references('IDBarang')->on('barang');
+            $table->foreign('IDBantuan')->references('IDBantuan')->on('bantuan');
         });
+
     }
 
     /**
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kebutuhan');
+        //
     }
 };

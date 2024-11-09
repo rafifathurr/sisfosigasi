@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Models\Kebutuhan;
+namespace App\Models\DistribusiBantuan;
 
-use App\Models\Barang\Barang;
+use App\Models\Bantuan\Bantuan;
 use App\Models\Posko\Posko;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kebutuhan extends Model
+class DistribusiBantuan extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'IDKebutuhan';
-    protected $table = 'kebutuhan';
+    protected $primaryKey = 'IDDistribusiBantuan';
+    protected $table = 'distribusi_bantuan';
     protected $guarded = [];
     public $timestamps = false;
 
@@ -20,8 +20,8 @@ class Kebutuhan extends Model
         return $this->hasOne(Posko::class,'IDPosko','IDPosko');
     }
 
-    public function barang()
+    public function bantuan()
     {
-        return $this->hasOne(Barang::class,'IDBarang','IDBarang');
+        return $this->hasOne(Bantuan::class,'IDBantuan','IDBantuan');
     }
 }
