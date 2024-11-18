@@ -155,7 +155,7 @@ class BarangController extends Controller
 
             $barang = Barang::where('IDBarang', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
+                'deleted_by' => Auth::user()->id ?? session('id'),
             ]);
             if ($barang) {
                 DB::commit();
@@ -168,5 +168,4 @@ class BarangController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

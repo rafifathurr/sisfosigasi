@@ -86,7 +86,7 @@ class BantuanController extends Controller
                 'IDDonatur' => $request->donatur, // Menyimpan ID donatur
                 'TanggalBantuan' => $request->tanggal_bantuan, // Menyimpan tanggal bantuan
                 'LastUpdateDate' => now(), // Menyimpan waktu update terakhir
-                'LastUpdateBy' => Auth::user()->id, // Menyimpan ID user yang melakukan update terakhir
+                'LastUpdateBy' => Auth::user()->id ?? session('id'), // Menyimpan ID user yang melakukan update terakhir
             ]);
 
             // Jika proses penyimpanan bantuan berhasil
@@ -184,7 +184,7 @@ class BantuanController extends Controller
                 'IDDonatur' => $request->donatur, // Update ID donatur
                 'TanggalBantuan' => $request->tanggal_bantuan, // Update tanggal bantuan
                 'LastUpdateDate' => now(), // Update waktu terakhir diubah
-                'LastUpdateBy' => Auth::user()->id, // Update user yang terakhir mengubah data
+                'LastUpdateBy' => Auth::user()->id ?? session('id'), // Update user yang terakhir mengubah data
             ]);
 
             // Jika update berhasil
@@ -270,7 +270,7 @@ class BantuanController extends Controller
 
             $bantuan = Bantuan::where('IDBantuan', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
+                'deleted_by' => Auth::user()->id ?? session('id'),
             ]);
             if ($bantuan) {
                 DB::commit();
@@ -283,5 +283,4 @@ class BantuanController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

@@ -157,7 +157,7 @@ class KelompokController extends Controller
 
             $kelompok = Kelompok::where('IDKelompok', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
+                'deleted_by' => Auth::user()->id ?? session('id'),
             ]);
             if ($kelompok) {
                 DB::commit();
@@ -170,5 +170,4 @@ class KelompokController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }

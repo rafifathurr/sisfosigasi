@@ -159,7 +159,7 @@ class JenisBarangController extends Controller
 
             $jenis_barang = JenisBarang::where('IDJenisBarang', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
+                'deleted_by' => Auth::user()->id ?? session('id'),
             ]);
             if ($jenis_barang) {
                 DB::commit();
@@ -172,5 +172,4 @@ class JenisBarangController extends Controller
             return ApiResponse::badRequest($e->getMessage());
         }
     }
-
 }
