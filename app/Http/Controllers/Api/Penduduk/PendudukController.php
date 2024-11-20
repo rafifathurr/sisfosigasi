@@ -84,7 +84,7 @@ class PendudukController extends Controller
                 'JenisKelamin' => $request->jenis_kelamin,
                 'Kelompok' => $request->kelompok,
                 'LastUpdateDate' => now(),
-                'LastUpdateBy' => auth()->user()->id,
+                'LastUpdateBy' => auth()->user()->id ?? session('id'),
             ]);
 
             // Jika penyimpanan berhasil, commit transaksi dan kembalikan response sukses
@@ -164,7 +164,7 @@ class PendudukController extends Controller
                 'JenisKelamin' => $request->jenis_kelamin,
                 'Kelompok' => $request->kelompok,
                 'LastUpdateDate' => now(),
-                'LastUpdateBy' => auth()->user()->id,
+                'LastUpdateBy' => auth()->user()->id ?? session('id'),
             ]);
 
             // Jika update berhasil, commit transaksi dan kembalikan response sukses
@@ -196,7 +196,7 @@ class PendudukController extends Controller
 
             $penduduk = Penduduk::where('IDPenduduk', $id)->update([
                 'deleted_at' => Carbon::now(),
-                'deleted_by' => Auth::user()->id,
+                'deleted_by' => Auth::user()->id ?? session('id'),
             ]);
             if ($penduduk) {
                 DB::commit();
